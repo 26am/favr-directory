@@ -19,6 +19,7 @@ Favr Directory lets chamber and association staff manage member businesses from 
 * Instant search, category filter, A–Z browsing, grid and list layouts.
 * Profiles with an "Open now" badge, map, directions, photo lightbox and schema.org structured data.
 * CSV import and export, WP-CLI commands and a Directory Manager role.
+* Front-end editing for business representatives: live edits or staff-approved suggestions per field, photo uploads, and "Claim this listing".
 * Business Directory and Business Profile blocks, shortcodes for page builders, and overridable templates.
 
 == Installation ==

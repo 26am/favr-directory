@@ -6,7 +6,9 @@ WordPress admin, and visitors get a fast, searchable directory with rich busines
 
 - **Requires:** WordPress 6.7+, PHP 8.1+
 - **License:** GPL-2.0-or-later
-- **Dependencies:** none (no ACF, no build step). See [ADR 0001](docs/adr/0001-custom-field-framework.md).
+- **Dependencies:** no ACF and no build step. Shared field UI and moderation code come from
+  [favr/core](https://github.com/26am/favr-core), bundled (namespace-prefixed) in `vendor-prefixed/`.
+  See [ADR 0001](docs/adr/0001-custom-field-framework.md).
 
 ## Features
 
@@ -43,6 +45,26 @@ WordPress admin, and visitors get a fast, searchable directory with rich busines
   Business and category pages appear in the sitemap automatically, and `/directory/` is added to
   the core sitemap.
 
+**For business representatives (front-end editing)**
+
+- **My Listing**: a representative updates their own listing from the front end: in the Favr
+  Members dashboard, on any page with the **My Listing** block, or with `[favr_my_listing]`. The
+  page is found automatically (or set under Settings → Member editing).
+- Every item has an access level that staff can change in Settings: **Edit** (live immediately:
+  phone, hours, social links, deals…), **Suggest** (staff approve first: name, description,
+  categories, address, logo, cover, gallery, video…) or **Hidden** (featured, member since).
+  Staff-only fields can never be exposed.
+- Photos upload straight from the form (images only, size-limited). There's no wp-admin or media
+  library access, and people can only use their own uploads.
+- Suggestions land in the shared **Approvals** screen (with Favr Events and Favr Members):
+  before/after comparison, approve all or selected fields, or reject with a note. The
+  representative is emailed either way. Approvals refuse to act on suggestions that changed while
+  a reviewer was looking.
+- **Claim this listing:** logged-in visitors can claim a listing. Staff approve in Approvals, and the
+  person becomes a listing manager, or a representative of the linked member with Favr Members.
+- Staff see and manage **Listing managers** on the business screen (add by email; new people get
+  an invitation), plus a log of recent changes by representatives.
+
 ## Displaying the directory
 
 | Where | How |
@@ -50,6 +72,7 @@ WordPress admin, and visitors get a fast, searchable directory with rich busines
 | Automatic | `/directory/`, `/directory/category/{slug}/`, `/directory/{business}/` |
 | Block editor | **Business Directory** block (filters, featured-only, layout, order…) and **Business Profile** block |
 | Shortcodes | `[favr_directory]`, `[favr_directory featured="1" per_page="6" search="0" letters="0"]`, `[favr_directory category="restaurants" layout="list"]` |
+| Representative editing | **My Listing** block or `[favr_my_listing]` (also a Favr Members dashboard tab) |
 | Page builders (Elementor, etc.) | `[favr_business id="123"]` for a whole profile, `[favr_business_field field="phone"]` for one value (also `address`, `hours`, `map`, `social`, `logo`, `categories`, `level`, any field id) |
 
 Theme support: block themes get registered templates (`single-favr_business`,

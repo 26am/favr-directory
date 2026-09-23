@@ -1,6 +1,6 @@
 # Favr Suite — Directory, Members, Events
 
-- **Status:** Favr Directory ✅ built · Favr Members v1 ✅ built ([26am/favr-members](https://github.com/26am/favr-members)) · favr/core ✅ ([26am/favr-core](https://github.com/26am/favr-core)) · Directory front-end editing and Favr Events: next
+- **Status:** all built. Favr Directory ✅ (incl. front-end editing, claims and Approvals) · Favr Members v1 ✅ ([26am/favr-members](https://github.com/26am/favr-members)) · Favr Events v1 ✅ ([26am/favr-events](https://github.com/26am/favr-events)) · favr/core 0.2 ✅ ([26am/favr-core](https://github.com/26am/favr-core))
 - **Date:** 2026-09-23
 - **Scope:** How the three Favr Sites plugins divide responsibilities and connect. It also covers member front-end editing of listings and member event submissions.
 - **Out of scope:** Payments and dues collection. Membership status is set by staff; the chamber invoices outside the site.
@@ -110,5 +110,12 @@ It's extracted when Favr Members starts, the first time a second plugin actually
 1. **Favr Members v1**: accounts, dashboard shell and tab API; extract `favr/core`.
 2. **Directory: front-end editing**: access policy, proposed changes, uploads, claim/invite, and the Approvals inbox.
 3. **Favr Events v1**: including member submissions through the same inbox.
+
+**As built (2026-09-23), differences from the plan above:**
+- Defaults: the gallery is also *review* (it publishes photos), and a repeater with image sub-fields is never exposed to representatives.
+- Claim approval on a listing linked to a business member adds the person to that member record (Members); otherwise they become a listing manager (`_favr_manager`).
+- Applications are never auto-linked to an existing listing by name; staff link listings explicitly on the member screen.
+- Approvals carry a fingerprint, so staff never approve content that changed after they opened the page.
+- Events: the calendar lives on an Events page (Events block) rather than a post type archive, so it stays editable in any theme or builder. Occurrences are written individually in iCal (no RRULE).
 
 **Decided 2026-09-23:** clients have a mix of individual and business members, and individuals must stay simple (§1). Payments remain out of scope.

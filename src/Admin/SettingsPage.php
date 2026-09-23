@@ -83,17 +83,18 @@ final class SettingsPage {
 		$old      = Settings::all();
 
 		$out = array(
-			'directory_slug'  => sanitize_title( (string) ( $input['directory_slug'] ?? '' ) ) ?: $defaults['directory_slug'],
-			'category_slug'   => sanitize_title( (string) ( $input['category_slug'] ?? '' ) ) ?: $defaults['category_slug'],
-			'directory_title' => sanitize_text_field( (string) ( $input['directory_title'] ?? '' ) ) ?: $defaults['directory_title'],
-			'per_page'        => min( 100, max( 1, absint( $input['per_page'] ?? 12 ) ) ),
-			'layout'          => in_array( $input['layout'] ?? '', array( 'grid', 'list' ), true ) ? $input['layout'] : 'grid',
-			'map_provider'    => in_array( $input['map_provider'] ?? '', array( 'google', 'none' ), true ) ? $input['map_provider'] : 'google',
-			'show_open_now'   => empty( $input['show_open_now'] ) ? '0' : '1',
-			'show_letters'    => empty( $input['show_letters'] ) ? '0' : '1',
-			'accent_color'    => (string) sanitize_hex_color( (string) ( $input['accent_color'] ?? '' ) ),
-			'sections'        => array_values( array_intersect( array_keys( Settings::sectionChoices() ), array_map( 'strval', (array) ( $input['sections'] ?? array() ) ) ) ),
-			'delete_data'     => empty( $input['delete_data'] ) ? '0' : '1',
+			'directory_slug'    => sanitize_title( (string) ( $input['directory_slug'] ?? '' ) ) ?: $defaults['directory_slug'],
+			'category_slug'     => sanitize_title( (string) ( $input['category_slug'] ?? '' ) ) ?: $defaults['category_slug'],
+			'directory_title'   => sanitize_text_field( (string) ( $input['directory_title'] ?? '' ) ) ?: $defaults['directory_title'],
+			'organization_name' => sanitize_text_field( (string) ( $input['organization_name'] ?? '' ) ),
+			'per_page'          => min( 100, max( 1, absint( $input['per_page'] ?? 12 ) ) ),
+			'layout'            => in_array( $input['layout'] ?? '', array( 'grid', 'list' ), true ) ? $input['layout'] : 'grid',
+			'map_provider'      => in_array( $input['map_provider'] ?? '', array( 'google', 'none' ), true ) ? $input['map_provider'] : 'google',
+			'show_open_now'     => empty( $input['show_open_now'] ) ? '0' : '1',
+			'show_letters'      => empty( $input['show_letters'] ) ? '0' : '1',
+			'accent_color'      => (string) sanitize_hex_color( (string) ( $input['accent_color'] ?? '' ) ),
+			'sections'          => array_values( array_intersect( array_keys( Settings::sectionChoices() ), array_map( 'strval', (array) ( $input['sections'] ?? array() ) ) ) ),
+			'delete_data'       => empty( $input['delete_data'] ) ? '0' : '1',
 		);
 
 		if ( $out['directory_slug'] !== $old['directory_slug'] || $out['category_slug'] !== $old['category_slug'] ) {
@@ -194,6 +195,20 @@ final class SettingsPage {
 								</td>
 							</tr>
 						</table>
+					</div>
+
+					<div class="favr-card">
+						<h2><?php esc_html_e( 'Search engines', 'favr-directory' ); ?></h2>
+						<table class="form-table" role="presentation">
+							<tr>
+								<th scope="row"><label for="favr-org"><?php esc_html_e( 'Your organization', 'favr-directory' ); ?></label></th>
+								<td>
+									<input type="text" id="favr-org" class="regular-text" name="<?php echo esc_attr( $option ); ?>[organization_name]" value="<?php echo esc_attr( (string) $s['organization_name'] ); ?>" placeholder="<?php echo esc_attr( wp_strip_all_tags( (string) get_bloginfo( 'name' ) ) ); ?>">
+									<p class="description"><?php esc_html_e( 'Every listing tells search engines it is a member of this organization (e.g. “Springfield Area Chamber of Commerce”). Leave blank to use the site title.', 'favr-directory' ); ?></p>
+								</td>
+							</tr>
+						</table>
+						<p class="description"><?php esc_html_e( 'Business pages include LocalBusiness structured data, directory pages an ItemList, and all pages breadcrumbs. With Yoast SEO or Rank Math active, this data is merged into their output instead of being printed separately.', 'favr-directory' ); ?></p>
 					</div>
 
 					<div class="favr-card">

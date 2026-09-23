@@ -36,7 +36,12 @@ WordPress admin, and visitors get a fast, searchable directory with rich busines
 - Business profiles with cover and logo, action buttons (Call / Website / Directions / Email /
   Book), member deal with copyable promo code, highlights, photo lightbox, video embed, hours with
   a cache-safe **Open now** badge, a lazy-loaded map, social links and "at a glance" facts.
-- schema.org `LocalBusiness` JSON-LD for rich search results.
+- **SEO:** schema.org `LocalBusiness` (linked to your chamber via `memberOf`) on business pages,
+  `ItemList` on directory and category pages, and `BreadcrumbList` everywhere. With **Yoast SEO**
+  or **Rank Math** active, everything is merged into their single JSON-LD graph and their
+  breadcrumbs follow the directory trail. Filtered and search URLs are `noindex,follow`.
+  Business and category pages appear in the sitemap automatically, and `/directory/` is added to
+  the core sitemap.
 
 ## Displaying the directory
 
@@ -74,7 +79,7 @@ add_filter( 'favr_directory_fields', function ( array $fields ) {
 } );
 ```
 
-Other hooks: `favr_directory_tabs`, `favr_directory_highlight_options`, `favr_directory_query_args`,
+Other hooks: `favr_directory_schema_graph`, `favr_directory_tabs`, `favr_directory_highlight_options`, `favr_directory_query_args`,
 `favr_directory_schema`, `favr_directory_template`, `favr_directory_filter_content`,
 `favr_directory_use_block_editor`, `favr_directory_after_tab`, `favr_directory_after_profile`,
 `favr_directory_business_saved`, `favr_directory_loaded`.

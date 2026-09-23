@@ -78,26 +78,7 @@ final class Directory {
 		$a           = self::normalize( $atts );
 		$interactive = $a['search'] || $a['letters'] || $a['level_filter'];
 		$request     = $interactive ? self::request() : array();
-
-		// On a category archive, default to that category.
-		$term_category = '';
-		if ( is_tax( ID::TAX_CATEGORY ) ) {
-			$term = get_queried_object();
-			if ( $term instanceof \WP_Term ) {
-				$term_category = $term->slug;
-			}
-		}
-
-		$args = array(
-			'search'   => $request['search'] ?? '',
-			'category' => ( $request['category'] ?? '' ) ?: ( $a['category'] ?: $term_category ),
-			'level'    => ( $request['level'] ?? '' ) ?: $a['level'],
-			'letter'   => $request['letter'] ?? '',
-			'featured' => $a['featured'],
-			'page'     => $a['pagination'] ? ( $request['page'] ?? 1 ) : 1,
-			'per_page' => $a['per_page'],
-			'order'    => $a['order'],
-		);
+		$args        = self::queryArgs( $a, $request );
 
 		$query      = DirectoryQuery::run( $args );
 		$businesses = array_map( static fn( \WP_Post $p ): Business => new Business( $p ), $query->posts );
@@ -120,6 +101,44 @@ final class Directory {
 				'show_open'   => '1' === Settings::get( 'show_open_now' ),
 			)
 		);
+	}
+
+	/**
+	 * Effective query args for normalized attributes + request parameters. Shared by the
+	 * renderer and the structured data so both describe exactly the same result set.
+	 *
+	 * @param array<string, mixed> $a       Normalized attributes.
+	 * @param array<string, mixed> $request Request parameters (see request()).
+	 * @return array<string, mixed>
+	 */
+	public static function queryArgs( array $a, array $request ): array {
+		// On a category archive, default to that category.
+		$term_category = '';
+		if ( is_tax( ID::TAX_CATEGORY ) ) {
+			$term = get_queried_object();
+			if ( $term instanceof \WP_Term ) {
+				$term_category = $term->slug;
+			}
+		}
+
+		return array(
+			'search'   => $request['search'] ?? '',
+			'category' => ( $request['category'] ?? '' ) ?: ( $a['category'] ?: $term_category ),
+			'level'    => ( $request['level'] ?? '' ) ?: $a['level'],
+			'letter'   => $request['letter'] ?? '',
+			'featured' => $a['featured'],
+			'page'     => $a['pagination'] ? ( $request['page'] ?? 1 ) : 1,
+			'per_page' => $a['per_page'],
+			'order'    => $a['order'],
+		);
+	}
+
+	/**
+	 * Whether the request carries visitor filters (search, letter, level or a category param).
+	 */
+	public static function isFilteredRequest(): bool {
+		$r = self::request();
+		return '' !== $r['search'] || '' !== $r['letter'] || '' !== $r['category'] || '' !== $r['level'];
 	}
 
 	/**

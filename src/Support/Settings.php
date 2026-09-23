@@ -26,17 +26,18 @@ final class Settings {
 	 */
 	public static function defaults(): array {
 		return array(
-			'directory_slug'  => 'directory',
-			'category_slug'   => 'category',
-			'directory_title' => __( 'Business Directory', 'favr-directory' ),
-			'per_page'        => 12,
-			'layout'          => 'grid',
-			'map_provider'    => 'google',
-			'show_open_now'   => '1',
-			'show_letters'    => '1',
-			'accent_color'    => '',
-			'sections'        => array_keys( self::sectionChoices() ),
-			'delete_data'     => '0',
+			'directory_slug'    => 'directory',
+			'category_slug'     => 'category',
+			'directory_title'   => __( 'Business Directory', 'favr-directory' ),
+			'organization_name' => '',
+			'per_page'          => 12,
+			'layout'            => 'grid',
+			'map_provider'      => 'google',
+			'show_open_now'     => '1',
+			'show_letters'      => '1',
+			'accent_color'      => '',
+			'sections'          => array_keys( self::sectionChoices() ),
+			'delete_data'       => '0',
 		);
 	}
 

@@ -177,3 +177,13 @@
 	height: 14px;
 	color: #8c8f94;
 }
+
+/* Listing managers box */
+.favr-managers { margin: 0 0 12px; }
+.favr-managers li { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f0f0f1; }
+.favr-managers small { color: #646970; }
+.favr-changelog summary { cursor: pointer; }
+.favr-changelog ul { margin: 8px 0 0; }
+.favr-changelog li { margin-bottom: 6px; }
+.favr-access-table { margin-top: 8px; max-width: 640px; }
+.favr-access-table td { vertical-align: middle; }

@@ -168,6 +168,24 @@
 
 .favr-upload__status { margin: 6px 0 0; font-size: .9em; color: #b32d2e; }
 
+.favr-front .favr-input-affix input { padding-left: 2.4em !important; }
+
+.favr-front .favr-input-affix .dashicons { left: .7em; }
+
+/* Stack the tabs above the fields whenever the form itself is narrow (theme content columns
+   are often ~600px even on desktop), not just on small screens. */
+.favr-front { container-type: inline-size; }
+
+@container (max-width: 760px) {
+	.favr-front .favr-panel { grid-template-columns: 1fr; }
+	.favr-front .favr-tabs { display: flex; flex-direction: row; flex-wrap: wrap; gap: 4px; padding: 8px; border-right: 0; border-bottom: 1px solid var(--favr-admin-border); }
+	.favr-front .favr-tab { width: auto !important; flex: 0 0 auto; border-left: 0; border-radius: 999px; padding: 6px 12px; }
+	.favr-front .favr-tab.is-active,
+	.favr-front .favr-tab.is-active .dashicons { background: var(--favr-admin-accent); color: #fff; }
+	.favr-front .favr-grid .favr-w-half,
+	.favr-front .favr-grid .favr-w-third { grid-column: 1 / -1; }
+}
+
 @media (max-width: 782px) {
 	.favr-front .favr-panel { grid-template-columns: 1fr; }
 	.favr-front .favr-tabs { display: flex; overflow-x: auto; }

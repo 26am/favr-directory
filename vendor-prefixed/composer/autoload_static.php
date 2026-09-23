@@ -31,6 +31,7 @@ class ComposerStaticInit53f212c7733183e1deebde32a5ce5d75
         'FavrDirectory\\Vendor\\FavrCore\\Support\\AssetVersion' => __DIR__ . '/..' . '/favr/core/src/Support/AssetVersion.php',
         'FavrDirectory\\Vendor\\FavrCore\\Support\\CsvFormat' => __DIR__ . '/..' . '/favr/core/src/Support/CsvFormat.php',
         'FavrDirectory\\Vendor\\FavrCore\\Support\\Hours' => __DIR__ . '/..' . '/favr/core/src/Support/Hours.php',
+        'FavrDirectory\\Vendor\\FavrCore\\Support\\RateLimit' => __DIR__ . '/..' . '/favr/core/src/Support/RateLimit.php',
         'FavrDirectory\\Vendor\\FavrCore\\Support\\Template' => __DIR__ . '/..' . '/favr/core/src/Support/Template.php',
     );
 

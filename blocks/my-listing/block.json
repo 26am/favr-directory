@@ -1,0 +1,17 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "favr-directory/my-listing",
+	"title": "My Listing (edit form)",
+	"category": "widgets",
+	"icon": "edit",
+	"description": "Lets a logged-in business representative update their directory listing.",
+	"keywords": [ "business", "directory", "member", "edit" ],
+	"textdomain": "favr-directory",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"align": [ "wide" ]
+	},
+	"editorScript": "favr-directory-blocks"
+}

@@ -1444,3 +1444,108 @@ a.favr-contact__sub {
 	font-size: 1.25rem;
 	font-weight: 700;
 }
+
+/* ----------------------------------------------------------- Owner tools */
+
+.favr-owner,
+.favr-my-listing {
+	--favr-accent: var(--wp--preset--color--primary, #1f5fbf);
+	--favr-border: color-mix(in srgb, currentColor 14%, transparent);
+	--favr-soft: color-mix(in srgb, currentColor 4%, transparent);
+	--favr-radius: 14px;
+	--favr-radius-sm: 8px;
+}
+
+.favr-owner {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin: 32px 0 0;
+	padding: 16px 20px;
+	border: 1px dashed var(--favr-border);
+	border-radius: var(--favr-radius-sm);
+	background: var(--favr-soft);
+}
+
+.favr-owner p { margin: 0; }
+
+.favr-owner--claim { display: block; }
+
+.favr-owner summary { cursor: pointer; font-weight: 600; }
+
+.favr-claim-form { margin-top: 12px; }
+
+.favr-claim-form label { display: block; margin-bottom: 4px; }
+
+.favr-claim-form textarea {
+	width: 100%;
+	box-sizing: border-box;
+	font: inherit;
+	padding: .5em .7em;
+	border: 1px solid var(--favr-border);
+	border-radius: 6px;
+	background: transparent;
+	color: inherit;
+}
+
+.favr-hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.favr-my-listing { margin: 0 0 32px; }
+
+.favr-my-listing__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 16px;
+}
+
+.favr-my-listing__title { margin: 0; }
+
+.favr-my-listing__switch {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 16px;
+}
+
+.favr-my-listing__switch a {
+	padding: 6px 12px;
+	border: 1px solid var(--favr-border);
+	border-radius: 999px;
+	text-decoration: none;
+	color: inherit;
+}
+
+.favr-my-listing__switch a.is-current {
+	background: var(--favr-accent);
+	border-color: var(--favr-accent);
+	color: #fff;
+}
+
+.favr-my-listing__submit {
+	position: sticky;
+	bottom: 0;
+	margin: 0;
+	padding: 12px 0;
+	background: var(--wp--preset--color--base, #fff);
+}
+
+.favr-my-listing .favr-pending { grid-column: 1 / -1; }
+
+.favr-my-listing .favr-pending img { width: 48px; height: 48px; object-fit: cover; border-radius: 4px; vertical-align: middle; margin-right: 4px; }
+
+.favr-notice {
+	margin: 0 0 16px;
+	padding: 12px 16px;
+	border-radius: var(--favr-radius-sm);
+	border-left: 4px solid var(--favr-accent);
+	background: var(--favr-soft);
+}
+
+.favr-notice--success { border-left-color: #15803d; }
+
+.favr-notice--error { border-left-color: #b91c1c; }

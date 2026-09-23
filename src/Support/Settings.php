@@ -38,6 +38,10 @@ final class Settings {
 			'accent_color'      => '',
 			'sections'          => array_keys( self::sectionChoices() ),
 			'delete_data'       => '0',
+			'member_access'     => array(),
+			'claims'            => '1',
+			'notify_email'      => '',
+			'edit_page'         => 0,
 		);
 	}
 

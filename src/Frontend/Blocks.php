@@ -46,6 +46,15 @@ final class Blocks {
 			FAVR_DIRECTORY_PATH . 'blocks/business-profile',
 			array( 'render_callback' => array( $this, 'renderProfile' ) )
 		);
+		register_block_type(
+			FAVR_DIRECTORY_PATH . 'blocks/my-listing',
+			array( 'render_callback' => array( $this, 'renderMyListing' ) )
+		);
+	}
+
+	/** My Listing block. */
+	public function renderMyListing(): string {
+		return sprintf( '<div %s>%s</div>', get_block_wrapper_attributes(), \FavrDirectory\Editing\FrontEditor::render() );
 	}
 
 	/**

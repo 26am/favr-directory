@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace FavrDirectory\Admin;
 
 use FavrDirectory\Model\Registrar;
+use FavrDirectory\Editing\Policy;
 use FavrDirectory\Schema\Identifiers as ID;
 use FavrDirectory\Support\Settings;
 
@@ -95,12 +96,33 @@ final class SettingsPage {
 			'accent_color'      => (string) sanitize_hex_color( (string) ( $input['accent_color'] ?? '' ) ),
 			'sections'          => array_values( array_intersect( array_keys( Settings::sectionChoices() ), array_map( 'strval', (array) ( $input['sections'] ?? array() ) ) ) ),
 			'delete_data'       => empty( $input['delete_data'] ) ? '0' : '1',
+			'member_access'     => self::sanitizeAccess( $input['member_access'] ?? array() ),
+			'claims'            => empty( $input['claims'] ) ? '0' : '1',
+			'notify_email'      => (string) sanitize_email( (string) ( $input['notify_email'] ?? '' ) ),
+			'edit_page'         => absint( $input['edit_page'] ?? 0 ),
 		);
 
 		if ( $out['directory_slug'] !== $old['directory_slug'] || $out['category_slug'] !== $old['category_slug'] ) {
 			update_option( ID::OPTION_FLUSH, 1 );
 		}
 		Settings::flush();
+		return $out;
+	}
+
+	/**
+	 * Keep only real overrides (differing from the default) with valid levels.
+	 *
+	 * @param mixed $input Raw map item id => level.
+	 * @return array<string, string>
+	 */
+	private static function sanitizeAccess( $input ): array {
+		$out = array();
+		foreach ( Policy::configurable() as $id => $item ) {
+			$level = is_array( $input ) ? (string) ( $input[ $id ] ?? '' ) : '';
+			if ( in_array( $level, Policy::LEVELS, true ) && Policy::defaultFor( (string) $id ) !== $level ) {
+				$out[ (string) $id ] = $level;
+			}
+		}
 		return $out;
 	}
 
@@ -209,6 +231,68 @@ final class SettingsPage {
 							</tr>
 						</table>
 						<p class="description"><?php esc_html_e( 'Business pages include LocalBusiness structured data, directory pages an ItemList, and all pages breadcrumbs. With Yoast SEO or Rank Math active, this data is merged into their output instead of being printed separately.', 'favr-directory' ); ?></p>
+					</div>
+
+					<div class="favr-card">
+						<h2><?php esc_html_e( 'Member editing', 'favr-directory' ); ?></h2>
+						<p class="description"><?php esc_html_e( 'Listing representatives can update their own listing from the front end (the “My Listing” tab in Favr Members, or any page with the [favr_my_listing] shortcode). Choose what they may change directly and what staff approve first in Approvals.', 'favr-directory' ); ?></p>
+						<table class="form-table" role="presentation">
+							<tr>
+								<th scope="row"><?php esc_html_e( 'Claims', 'favr-directory' ); ?></th>
+								<td><label><input type="checkbox" name="<?php echo esc_attr( $option ); ?>[claims]" value="1" <?php checked( $s['claims'], '1' ); ?>> <?php esc_html_e( 'Show “Is this your business? Claim it” on listings', 'favr-directory' ); ?></label></td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="favr-notify"><?php esc_html_e( 'Notify', 'favr-directory' ); ?></label></th>
+								<td>
+									<input type="email" id="favr-notify" class="regular-text" name="<?php echo esc_attr( $option ); ?>[notify_email]" value="<?php echo esc_attr( (string) $s['notify_email'] ); ?>" placeholder="<?php echo esc_attr( (string) get_option( 'admin_email' ) ); ?>">
+									<p class="description"><?php esc_html_e( 'Who hears about proposed changes and new claims. Leave blank for the site admin email.', 'favr-directory' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="favr-edit-page"><?php esc_html_e( 'Edit listing page', 'favr-directory' ); ?></label></th>
+								<td>
+									<?php
+									wp_dropdown_pages(
+										array(
+											'name'     => esc_attr( $option ) . '[edit_page]',
+											'id'       => 'favr-edit-page',
+											'selected' => (int) $s['edit_page'],
+											'show_option_none' => esc_html__( '— Automatic —', 'favr-directory' ),
+											'option_none_value' => '0',
+										)
+									);
+									?>
+									<p class="description"><?php esc_html_e( 'A page containing [favr_my_listing]. With Favr Members active, the member dashboard is used automatically.', 'favr-directory' ); ?></p>
+								</td>
+							</tr>
+						</table>
+						<table class="widefat striped favr-access-table">
+							<thead><tr><th><?php esc_html_e( 'Item', 'favr-directory' ); ?></th><th><?php esc_html_e( 'Representatives can…', 'favr-directory' ); ?></th></tr></thead>
+							<tbody>
+							<?php
+							$favr_levels = array(
+								Policy::EDIT   => __( 'Edit (live immediately)', 'favr-directory' ),
+								Policy::REVIEW => __( 'Suggest (staff approve)', 'favr-directory' ),
+								Policy::NONE   => __( 'Not see it', 'favr-directory' ),
+							);
+							foreach ( Policy::configurable() as $favr_id => $favr_item ) :
+								$favr_default = Policy::defaultFor( (string) $favr_id );
+								$favr_current = (string) ( ( (array) $s['member_access'] )[ $favr_id ] ?? $favr_default );
+								?>
+								<tr>
+									<td><label for="favr-access-<?php echo esc_attr( (string) $favr_id ); ?>"><?php echo esc_html( (string) $favr_item['label'] ); ?></label></td>
+									<td>
+										<select id="favr-access-<?php echo esc_attr( (string) $favr_id ); ?>" name="<?php echo esc_attr( $option ); ?>[member_access][<?php echo esc_attr( (string) $favr_id ); ?>]">
+											<?php foreach ( $favr_levels as $favr_level => $favr_label ) : ?>
+												<option value="<?php echo esc_attr( $favr_level ); ?>" <?php selected( $favr_current, $favr_level ); ?>><?php echo esc_html( $favr_label . ( $favr_default === $favr_level ? ' ' . __( '(default)', 'favr-directory' ) : '' ) ); ?></option>
+											<?php endforeach; ?>
+										</select>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+							</tbody>
+						</table>
+						<p class="description"><?php esc_html_e( 'Staff-only fields (renewal date, member ID, staff notes) are never shown to representatives.', 'favr-directory' ); ?></p>
 					</div>
 
 					<div class="favr-card">

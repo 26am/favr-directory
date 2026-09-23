@@ -21,8 +21,9 @@ namespace FavrDirectory\Vendor\FavrCore\Approvals;
  *  - items       callable(): list<array{id: int, title: string, subtitle?: string, edit_url?: string, time?: int, details: string, fields?: array<string,string>}>
  *                         `details` is escaped HTML (e.g. from Inbox::diff()); `fields` (key => label)
  *                         enables approving individual fields.
- *  - decide      callable( int $id, string $decision approve|reject, list<string> $fields, string $note ): string
- *                         Returns a human result message.
+ *  - decide      callable( int $id, string $decision approve|reject, ?list<string> $fields, string $note ): string
+ *                         $fields is null when the item had no field checkboxes (act on everything),
+ *                         otherwise the ticked fields (possibly none). Returns a human result message.
  */
 final class Inbox {
 
@@ -129,7 +130,7 @@ final class Inbox {
 		);
 		echo '<div class="favr-approvals__details">' . wp_kses_post( (string) $item['details'] ) . '</div>';
 		if ( count( $fields ) > 1 ) {
-			echo '<fieldset class="favr-approvals__fields"><legend>' . esc_html__( 'Approve:', 'favr-core' ) . '</legend>';
+			echo '<fieldset class="favr-approvals__fields"><input type="hidden" name="fields_shown" value="1"><legend>' . esc_html__( 'Approve:', 'favr-core' ) . '</legend>';
 			foreach ( $fields as $key => $label ) {
 				printf( '<label><input type="checkbox" name="fields[]" value="%1$s" checked> %2$s</label> ', esc_attr( (string) $key ), esc_html( (string) $label ) );
 			}
@@ -161,7 +162,7 @@ final class Inbox {
 			wp_die( esc_html__( 'You are not allowed to review this.', 'favr-core' ), 403 );
 		}
 		$decision = isset( $_POST['decision'] ) && 'reject' === $_POST['decision'] ? 'reject' : 'approve';
-		$fields   = array_map( 'sanitize_key', (array) wp_unslash( $_POST['fields'] ?? array() ) );
+		$fields   = isset( $_POST['fields_shown'] ) ? array_map( 'sanitize_key', (array) wp_unslash( $_POST['fields'] ?? array() ) ) : null;
 		$note     = sanitize_textarea_field( wp_unslash( $_POST['note'] ?? '' ) );
 		$result   = (string) call_user_func( $provider['decide'], $item, $decision, $fields, $note );
 		wp_safe_redirect( add_query_arg( 'favr_result', rawurlencode( $result ), admin_url( 'admin.php?page=' . self::PAGE ) ) );

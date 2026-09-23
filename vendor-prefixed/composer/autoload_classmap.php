@@ -16,5 +16,6 @@ return array(
     'FavrDirectory\\Vendor\\FavrCore\\Support\\AssetVersion' => $vendorDir . '/favr/core/src/Support/AssetVersion.php',
     'FavrDirectory\\Vendor\\FavrCore\\Support\\CsvFormat' => $vendorDir . '/favr/core/src/Support/CsvFormat.php',
     'FavrDirectory\\Vendor\\FavrCore\\Support\\Hours' => $vendorDir . '/favr/core/src/Support/Hours.php',
+    'FavrDirectory\\Vendor\\FavrCore\\Support\\RateLimit' => $vendorDir . '/favr/core/src/Support/RateLimit.php',
     'FavrDirectory\\Vendor\\FavrCore\\Support\\Template' => $vendorDir . '/favr/core/src/Support/Template.php',
 );

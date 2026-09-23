@@ -182,6 +182,16 @@ final class FieldRegistry {
 	 * @param array<string, mixed> $field Raw definition.
 	 * @return array<string, mixed>
 	 */
+	public static function normalizeItem( array $field ): array {
+		return self::normalize( $field );
+	}
+
+	/**
+	 * Fill defaults.
+	 *
+	 * @param array<string, mixed> $field Raw definition.
+	 * @return array<string, mixed>
+	 */
 	private static function normalize( array $field ): array {
 		return FieldSet::normalize(
 			array_merge(

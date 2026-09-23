@@ -187,4 +187,21 @@
 			return null;
 		}
 	} );
+
+	registerBlockType( 'favr-directory/my-listing', {
+		edit: function () {
+			return el(
+				'div',
+				useBlockProps(),
+				el( C.Placeholder, {
+					icon: 'edit',
+					label: __( 'My Listing', 'favr-directory' ),
+					instructions: __( 'Logged-in business representatives see a form to update their directory listing here. Everyone else sees a login prompt.', 'favr-directory' )
+				} )
+			);
+		},
+		save: function () {
+			return null;
+		}
+	} );
 } )( window.wp );

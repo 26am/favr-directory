@@ -50,9 +50,16 @@ final class Plugin {
 		( new Frontend\Shortcodes() )->hook();
 		( new Frontend\Seo() )->hook();
 
+		( new Editing\FrontEditor() )->hook();
+		( new Editing\UploadRoute() )->hook();
+		( new Editing\Claims() )->hook();
+		( new Editing\ChangeQueue() )->hook();
+
 		if ( is_admin() ) {
 			( new Admin\Assets() )->hook();
 			( new Admin\EditScreen() )->hook();
+			( new Admin\ManagersBox() )->hook();
+			\FavrDirectory\Vendor\FavrCore\Approvals\Inbox::boot();
 			( new Admin\ListScreen() )->hook();
 			( new Admin\LevelScreen() )->hook();
 			( new Admin\SettingsPage() )->hook();

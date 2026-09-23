@@ -47,6 +47,10 @@ symlinked to `wp-content/plugins/favr-directory`. There's no global `wp` binary:
   `Values` (where each item lives, including the core items business_name/description/categories/cover),
   `FrontEditor` (form + save), `UploadRoute`, `ChangeQueue` + `Claims` (Approvals providers), `Notifier`.
   Every rep write re-checks the policy and attachment ownership; approvals re-check the policy.
+- **Page builders** (ADR 0002 in Favr Directory): one renderer per feature; the shortcode, block
+  and Elementor widget (`Integration\Elementor\*`, base class in favr/core) are thin adapters.
+  Builder data (Elementor dynamic tags, block bindings) comes only from `Integration\FieldValues`.
+  Never reference Elementor classes outside callbacks of Elementor's own hooks.
 - **Identifiers:** never hardcode post type, taxonomy, meta, option, cap or query-var strings. Use
   `Schema\Identifiers`.
 

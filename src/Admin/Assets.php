@@ -33,7 +33,8 @@ final class Assets {
 			return;
 		}
 
-		wp_enqueue_style( 'favr-directory-admin', FAVR_DIRECTORY_URL . 'assets/admin/admin.css', array(), AssetVersion::of( 'assets/admin/admin.css' ) );
+		wp_enqueue_style( 'favr-core-fields', FAVR_DIRECTORY_URL . 'assets/core/fields.css', array(), AssetVersion::of( 'assets/core/fields.css' ) );
+		wp_enqueue_style( 'favr-directory-admin', FAVR_DIRECTORY_URL . 'assets/admin/admin.css', array( 'favr-core-fields' ), AssetVersion::of( 'assets/admin/admin.css' ) );
 
 		$deps = array( 'jquery' );
 		if ( 'post' === $screen->base ) {
@@ -45,7 +46,25 @@ final class Assets {
 			$deps[] = 'wp-color-picker';
 		}
 
-		wp_enqueue_script( 'favr-directory-admin', FAVR_DIRECTORY_URL . 'assets/admin/admin.js', $deps, AssetVersion::of( 'assets/admin/admin.js' ), true );
+		// Handle shared with other Favr plugins: whichever registers first wins, and all copies are
+		// the same favr-core release family.
+		wp_enqueue_script( 'favr-core-fields', FAVR_DIRECTORY_URL . 'assets/core/fields.js', $deps, AssetVersion::of( 'assets/core/fields.js' ), true );
+		wp_localize_script(
+			'favr-core-fields',
+			'favrCoreFields',
+			array(
+				'i18n' => array(
+					'chooseLogo'   => __( 'Choose an image', 'favr-directory' ),
+					'useImage'     => __( 'Use this image', 'favr-directory' ),
+					'addPhotos'    => __( 'Add photos to the gallery', 'favr-directory' ),
+					'addToGallery' => __( 'Add to gallery', 'favr-directory' ),
+					'confirmClear' => __( 'Remove all opening hours for this business?', 'favr-directory' ),
+					/* translators: %d: number of characters. */
+					'charsLeft'    => __( '%d characters left', 'favr-directory' ),
+				),
+			)
+		);
+		wp_enqueue_script( 'favr-directory-admin', FAVR_DIRECTORY_URL . 'assets/admin/admin.js', array( 'jquery', 'favr-core-fields' ), AssetVersion::of( 'assets/admin/admin.js' ), true );
 		wp_localize_script(
 			'favr-directory-admin',
 			'favrDirectory',
@@ -54,17 +73,9 @@ final class Assets {
 				'nonce'   => wp_create_nonce( ID::NONCE_AJAX ),
 				'weights' => 'post' === $screen->base ? EditScreen::weights() : array(),
 				'i18n'    => array(
-					'chooseLogo'   => __( 'Choose an image', 'favr-directory' ),
-					'useImage'     => __( 'Use this image', 'favr-directory' ),
-					'addPhotos'    => __( 'Add photos to the gallery', 'favr-directory' ),
-					'addToGallery' => __( 'Add to gallery', 'favr-directory' ),
-					'confirmClear' => __( 'Remove all opening hours for this business?', 'favr-directory' ),
-					'great'        => __( 'Looking great!', 'favr-directory' ),
-					'almost'       => __( 'Almost there', 'favr-directory' ),
-					'needsMore'    => __( 'Needs more details', 'favr-directory' ),
-					'invalidField' => __( 'Please check this field.', 'favr-directory' ),
-					/* translators: %d: number of characters. */
-					'charsLeft'    => __( '%d characters left', 'favr-directory' ),
+					'great'     => __( 'Looking great!', 'favr-directory' ),
+					'almost'    => __( 'Almost there', 'favr-directory' ),
+					'needsMore' => __( 'Needs more details', 'favr-directory' ),
 				),
 			)
 		);

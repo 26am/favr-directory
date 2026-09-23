@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace FavrDirectory\Tests\Unit;
 
-use FavrDirectory\Support\Hours;
+use FavrDirectory\Vendor\FavrCore\Support\Hours;
 
 final class HoursTest extends TestCase {
 

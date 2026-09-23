@@ -10,7 +10,8 @@ declare(strict_types=1);
 namespace FavrDirectory\Admin;
 
 use FavrDirectory\Fields\FieldRegistry;
-use FavrDirectory\Fields\Sanitizer;
+use FavrDirectory\Vendor\FavrCore\Admin\FieldRenderer;
+use FavrDirectory\Vendor\FavrCore\Fields\Sanitizer;
 use FavrDirectory\Model\Business;
 use FavrDirectory\Schema\Identifiers as ID;
 use FavrDirectory\Support\Completeness;

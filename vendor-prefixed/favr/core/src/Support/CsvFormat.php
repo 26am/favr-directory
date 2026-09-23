@@ -2,12 +2,12 @@
 /**
  * Field value <-> CSV cell encoding.
  *
- * @package FavrDirectory
+ * @package FavrCore
  */
 
 declare(strict_types=1);
 
-namespace FavrDirectory\Support;
+namespace FavrDirectory\Vendor\FavrCore\Support;
 
 /**
  * Human-editable CSV encodings so a spreadsheet round-trips cleanly:

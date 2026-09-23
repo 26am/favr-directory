@@ -2,12 +2,12 @@
 /**
  * Pure logic over a weekly opening-hours schedule.
  *
- * @package FavrDirectory
+ * @package FavrCore
  */
 
 declare(strict_types=1);
 
-namespace FavrDirectory\Support;
+namespace FavrDirectory\Vendor\FavrCore\Support;
 
 /**
  * Works on the canonical shape produced by Sanitizer::hours():
@@ -17,6 +17,23 @@ namespace FavrDirectory\Support;
 final class Hours {
 
 	public const DAYS = array( 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' );
+
+	/**
+	 * Translated day names in display order.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function dayLabels(): array {
+		return array(
+			'mon' => __( 'Monday', 'favr-core' ),
+			'tue' => __( 'Tuesday', 'favr-core' ),
+			'wed' => __( 'Wednesday', 'favr-core' ),
+			'thu' => __( 'Thursday', 'favr-core' ),
+			'fri' => __( 'Friday', 'favr-core' ),
+			'sat' => __( 'Saturday', 'favr-core' ),
+			'sun' => __( 'Sunday', 'favr-core' ),
+		);
+	}
 
 	/**
 	 * Whether the business is open at a moment. Null when no schedule is set.

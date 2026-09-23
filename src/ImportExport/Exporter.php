@@ -12,7 +12,7 @@ namespace FavrDirectory\ImportExport;
 use FavrDirectory\Fields\FieldRegistry;
 use FavrDirectory\Model\Business;
 use FavrDirectory\Schema\Identifiers as ID;
-use FavrDirectory\Support\CsvFormat;
+use FavrDirectory\Vendor\FavrCore\Support\CsvFormat;
 
 /**
  * Streams every business as CSV. The column set is exactly what the Importer reads, so an

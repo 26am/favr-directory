@@ -2,12 +2,12 @@
 /**
  * Type-driven sanitization for field values.
  *
- * @package FavrDirectory
+ * @package FavrCore
  */
 
 declare(strict_types=1);
 
-namespace FavrDirectory\Fields;
+namespace FavrDirectory\Vendor\FavrCore\Fields;
 
 /**
  * Turns untrusted input (a POST, a CSV cell, a REST payload) into the canonical stored shape
@@ -21,7 +21,7 @@ final class Sanitizer {
 	/**
 	 * Sanitize a value for a field definition.
 	 *
-	 * @param array<string, mixed> $field Field definition (see FieldRegistry).
+	 * @param array<string, mixed> $field Field definition (see FieldSet).
 	 * @param mixed                $value Raw input.
 	 * @return mixed Canonical value ('' / array() for empty).
 	 */
@@ -43,6 +43,7 @@ final class Sanitizer {
 				return self::number( $value, $field['min'], $field['max'] );
 
 			case 'select':
+			case 'radio':
 				$value = self::str( $value );
 				return ( '' !== $value && array_key_exists( $value, (array) $field['options'] ) ) ? $value : '';
 
@@ -51,6 +52,9 @@ final class Sanitizer {
 
 			case 'date':
 				return self::date( self::str( $value ) );
+
+			case 'time':
+				return self::time( self::str( $value ) );
 
 			case 'image':
 				$id = is_numeric( $value ) ? (int) $value : 0;
@@ -178,6 +182,27 @@ final class Sanitizer {
 			return gmdate( 'Y-m-d', $timestamp );
 		}
 		return $value;
+	}
+
+	/**
+	 * 24-hour HH:MM, or ''. Accepts "9:30", "09:30:00", "9:30 pm".
+	 *
+	 * @param string $value Raw.
+	 */
+	public static function time( string $value ): string {
+		$value = strtolower( trim( $value ) );
+		if ( ! preg_match( '/^(\d{1,2})(?::(\d{2})(?::\d{2})?)?\s*(am|pm)?$/', $value, $m ) || ( empty( $m[2] ) && empty( $m[3] ) ) ) {
+			return ''; // A bare number ("9") is ambiguous; require minutes or am/pm.
+		}
+		$hour   = (int) $m[1];
+		$minute = (int) ( '' !== ( $m[2] ?? '' ) ? $m[2] : 0 );
+		if ( ! empty( $m[3] ) ) {
+			if ( $hour < 1 || $hour > 12 ) {
+				return '';
+			}
+			$hour = ( 12 === $hour ? 0 : $hour ) + ( 'pm' === $m[3] ? 12 : 0 );
+		}
+		return ( $hour > 23 || $minute > 59 ) ? '' : sprintf( '%02d:%02d', $hour, $minute );
 	}
 
 	/**

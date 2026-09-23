@@ -22,24 +22,21 @@ define( 'FAVR_DIRECTORY_FILE', __FILE__ );
 define( 'FAVR_DIRECTORY_PATH', plugin_dir_path( __FILE__ ) );
 define( 'FAVR_DIRECTORY_URL', plugin_dir_url( __FILE__ ) );
 
-// Composer autoloader when present (dev), otherwise the bundled PSR-4 loader so the plugin
-// runs from a plain zip with no build step.
-if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
-	require_once __DIR__ . '/vendor/autoload.php';
-} else {
-	spl_autoload_register(
-		static function ( string $class_name ): void {
-			$prefix = 'FavrDirectory\\';
-			if ( strncmp( $class_name, $prefix, strlen( $prefix ) ) !== 0 ) {
-				return;
-			}
-			$file = __DIR__ . '/src/' . str_replace( '\\', '/', substr( $class_name, strlen( $prefix ) ) ) . '.php';
-			if ( is_readable( $file ) ) {
-				require_once $file;
-			}
+// Shared favr/core library, namespace-prefixed by Strauss so each Favr plugin carries its own copy.
+require_once __DIR__ . '/vendor-prefixed/autoload.php';
+
+spl_autoload_register(
+	static function ( string $class_name ): void {
+		$prefix = 'FavrDirectory\\';
+		if ( strncmp( $class_name, $prefix, strlen( $prefix ) ) !== 0 ) {
+			return;
 		}
-	);
-}
+		$file = __DIR__ . '/src/' . str_replace( '\\', '/', substr( $class_name, strlen( $prefix ) ) ) . '.php';
+		if ( is_readable( $file ) ) {
+			require_once $file;
+		}
+	}
+);
 
 register_activation_hook( __FILE__, array( \FavrDirectory\Model\Activation::class, 'activate' ) );
 register_deactivation_hook( __FILE__, array( \FavrDirectory\Model\Activation::class, 'deactivate' ) );

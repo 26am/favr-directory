@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace FavrDirectory\Fields;
 
+use FavrDirectory\Vendor\FavrCore\Fields\FieldSet;
+use FavrDirectory\Vendor\FavrCore\Support\Hours;
+
 /**
  * The single definition of the business profile. The admin UI, the sanitizer, the REST
  * registration, CSV import/export and the front end all read from here, so adding a field is
@@ -152,15 +155,7 @@ final class FieldRegistry {
 	 * @return array<string, string>
 	 */
 	public static function days(): array {
-		return array(
-			'mon' => __( 'Monday', 'favr-directory' ),
-			'tue' => __( 'Tuesday', 'favr-directory' ),
-			'wed' => __( 'Wednesday', 'favr-directory' ),
-			'thu' => __( 'Thursday', 'favr-directory' ),
-			'fri' => __( 'Friday', 'favr-directory' ),
-			'sat' => __( 'Saturday', 'favr-directory' ),
-			'sun' => __( 'Sunday', 'favr-directory' ),
-		);
+		return Hours::dayLabels();
 	}
 
 	/**
@@ -188,26 +183,14 @@ final class FieldRegistry {
 	 * @return array<string, mixed>
 	 */
 	private static function normalize( array $field ): array {
-		return array_merge(
-			array(
-				'id'          => '',
-				'label'       => '',
-				'type'        => 'text',
-				'tab'         => 'overview',
-				'width'       => 'full',
-				'description' => '',
-				'placeholder' => '',
-				'options'     => array(),
-				'default'     => '',
-				'maxlength'   => 0,
-				'min'         => null,
-				'max'         => null,
-				'sub_fields'  => array(),
-				'conditions'  => array(),
-				'private'     => false,
-				'weight'      => 0,
-			),
-			$field
+		return FieldSet::normalize(
+			array_merge(
+				array(
+					'tab'           => 'overview',
+					'member_access' => '',
+				),
+				$field
+			)
 		);
 	}
 

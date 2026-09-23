@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace FavrDirectory\Tests\Unit;
 
-use FavrDirectory\Fields\Sanitizer;
+use FavrDirectory\Vendor\FavrCore\Fields\Sanitizer;
 
 final class SanitizerTest extends TestCase {
 

@@ -12,7 +12,7 @@ namespace FavrDirectory\Model;
 use FavrDirectory\Fields\FieldRegistry;
 use FavrDirectory\Schema\Identifiers as ID;
 use FavrDirectory\Support\Completeness;
-use FavrDirectory\Support\Hours;
+use FavrDirectory\Vendor\FavrCore\Support\Hours;
 
 /**
  * Presentation-ready accessors over a business post. Values are raw (unescaped); templates

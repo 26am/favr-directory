@@ -10,7 +10,7 @@
  */
 
 use FavrDirectory\Fields\FieldRegistry;
-use FavrDirectory\Support\Hours;
+use FavrDirectory\Vendor\FavrCore\Support\Hours;
 
 defined( 'ABSPATH' ) || exit;
 

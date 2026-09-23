@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace FavrDirectory\Tests\Unit;
 
-use FavrDirectory\Support\CsvFormat;
+use FavrDirectory\Vendor\FavrCore\Support\CsvFormat;
 
 final class CsvFormatTest extends TestCase {
 

@@ -12,6 +12,7 @@ namespace FavrDirectory\Editing;
 use FavrDirectory\Fields\FieldRegistry;
 use FavrDirectory\Schema\Identifiers as ID;
 use FavrDirectory\Vendor\FavrCore\Fields\Sanitizer;
+use FavrDirectory\Vendor\FavrCore\Moderation\Uploads;
 use FavrDirectory\Vendor\FavrCore\Support\Hours;
 
 /**
@@ -107,6 +108,8 @@ final class Values {
 	 * @param mixed  $value   Sanitized value.
 	 */
 	public static function apply( int $post_id, string $id, $value ): void {
+		// Representative uploads start private; they become public once used on the live listing.
+		Uploads::publish( self::attachments( $id, $value ), $post_id );
 		switch ( $id ) {
 			case 'business_name':
 				if ( '' !== (string) $value ) {

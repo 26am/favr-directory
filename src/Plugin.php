@@ -54,6 +54,7 @@ final class Plugin {
 		( new Editing\UploadRoute() )->hook();
 		( new Editing\Claims() )->hook();
 		( new Editing\ChangeQueue() )->hook();
+		self::scheduleUploadCleanup();
 
 		if ( is_admin() ) {
 			( new Admin\Assets() )->hook();
@@ -74,6 +75,24 @@ final class Plugin {
 		 * Fires after Favr Directory has wired its services. Extensions hook here.
 		 */
 		do_action( 'favr_directory_loaded' );
+	}
+
+	/**
+	 * Daily removal of representative uploads that were never used (shared hook: whichever Favr
+	 * plugin is active runs it once).
+	 */
+	private static function scheduleUploadCleanup(): void {
+		if ( ! has_action( 'favr_core_uploads_cleanup' ) ) {
+			add_action( 'favr_core_uploads_cleanup', array( Vendor\FavrCore\Moderation\Uploads::class, 'cleanup' ) );
+		}
+		add_action(
+			'init',
+			static function (): void {
+				if ( ! wp_next_scheduled( 'favr_core_uploads_cleanup' ) ) {
+					wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'favr_core_uploads_cleanup' );
+				}
+			}
+		);
 	}
 
 	/** Translations. */

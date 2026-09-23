@@ -4,7 +4,7 @@
     'name' => 'favr/favr-directory',
     'pretty_version' => 'dev-main',
     'version' => 'dev-main',
-    'reference' => '75838b565745a65d895415ef38e27fccdd5dcaf9',
+    'reference' => '82ca9e8d0a7789758b6410a5f52e284cee3d1092',
     'type' => 'wordpress-plugin',
     'install_path' => __DIR__ . '/../',
     'aliases' => 
@@ -16,9 +16,9 @@
   array (
     'favr/core' => 
     array (
-      'pretty_version' => 'v0.2.8',
-      'version' => '0.2.8.0',
-      'reference' => '0818b49185ff20f79a5e2e6028a4241f56105096',
+      'pretty_version' => 'v0.3.0',
+      'version' => '0.3.0.0',
+      'reference' => '25e7ef69c6ea859ce4bc14f97d44596453efa788',
       'type' => 'library',
       'install_path' => __DIR__ . '/../favr/core',
       'aliases' => 

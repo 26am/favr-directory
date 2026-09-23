@@ -30,6 +30,7 @@ final class Activation {
 
 	/** Plugin deactivated: drop our rewrite rules. */
 	public static function deactivate(): void {
+		wp_clear_scheduled_hook( 'favr_core_uploads_cleanup' ); // Other active Favr plugins reschedule it.
 		unregister_post_type( ID::POST_TYPE );
 		flush_rewrite_rules( false );
 	}

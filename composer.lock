@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6f7bd5382a31de1757895f5a3af0de9f",
+    "content-hash": "0b619ab1581cc49f23e01d78e02e5dc2",
     "packages": [
         {
             "name": "favr/core",
-            "version": "v0.4.0",
+            "version": "v0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/26am/favr-core.git",
-                "reference": "6cea7a7c282d25ec43750c826f481c91edfb14f5"
+                "reference": "09ab8893bc3849498ef120d512bc3c4d66de94f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/26am/favr-core/zipball/6cea7a7c282d25ec43750c826f481c91edfb14f5",
-                "reference": "6cea7a7c282d25ec43750c826f481c91edfb14f5",
+                "url": "https://api.github.com/repos/26am/favr-core/zipball/09ab8893bc3849498ef120d512bc3c4d66de94f2",
+                "reference": "09ab8893bc3849498ef120d512bc3c4d66de94f2",
                 "shasum": ""
             },
             "require": {
@@ -52,10 +52,10 @@
             ],
             "description": "Shared building blocks for Favr Sites plugins: declarative fields, sanitizing, admin field UI, templates.",
             "support": {
-                "source": "https://github.com/26am/favr-core/tree/v0.4.0",
+                "source": "https://github.com/26am/favr-core/tree/v0.4.1",
                 "issues": "https://github.com/26am/favr-core/issues"
             },
-            "time": "2026-09-23T17:03:37+00:00"
+            "time": "2026-09-23T17:10:06+00:00"
         }
     ],
     "packages-dev": [

@@ -47,6 +47,14 @@ abstract class Widget extends Widget_Base {
 		return '--favr-brand';
 	}
 
+	/**
+	 * Favr widgets depend on the visitor (login state, membership) and on the URL (directory
+	 * filters, calendar month), so Elementor's element cache must render them fresh each time.
+	 */
+	protected function is_dynamic_content(): bool {
+		return true;
+	}
+
 	/** Category. */
 	public function get_categories(): array {
 		return array( self::CATEGORY );

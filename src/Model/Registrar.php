@@ -109,13 +109,25 @@ final class Registrar {
 	}
 
 	/** The business post type. */
+	/**
+	 * Capitalised noun for labels.
+	 *
+	 * @param bool $plural Plural.
+	 */
+	private static function ucNoun( bool $plural ): string {
+		$noun = \FavrDirectory\Support\Settings::noun( $plural );
+		return mb_strtoupper( mb_substr( $noun, 0, 1 ) ) . mb_substr( $noun, 1 );
+	}
+
+	/** Register the business post type. */
 	public function registerPostType(): void {
 		register_post_type(
 			ID::POST_TYPE,
 			array(
 				'labels'          => array(
-					'name'                  => __( 'Businesses', 'favr-directory' ),
-					'singular_name'         => __( 'Business', 'favr-directory' ),
+					// Public-facing names follow the directory's nouns ("Members" for a bar association).
+					'name'                  => self::ucNoun( true ),
+					'singular_name'         => self::ucNoun( false ),
 					'menu_name'             => __( 'Directory', 'favr-directory' ),
 					'all_items'             => __( 'All Businesses', 'favr-directory' ),
 					'add_new'               => __( 'Add Business', 'favr-directory' ),

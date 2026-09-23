@@ -21,6 +21,9 @@ final class Ranking {
 
 	public const META_KEY = '_favr_rank';
 
+	/** Alphabetizing key (lowercase; "last first" for people directories). */
+	public const SORT_KEY = '_favr_sort';
+
 	/** Hook recomputation triggers. */
 	public function hook(): void {
 		add_action( 'save_post_' . ID::POST_TYPE, array( $this, 'onSave' ), 20 );
@@ -74,6 +77,34 @@ final class Ranking {
 			$order = is_numeric( $raw ) ? (int) $raw : 998;
 		}
 		update_post_meta( $post_id, self::META_KEY, self::rank( $featured, $order ) );
+		update_post_meta(
+			$post_id,
+			self::SORT_KEY,
+			self::sortKey( (string) get_the_title( $post_id ), (string) get_post_meta( $post_id, ID::meta( 'sort_name' ), true ), \FavrDirectory\Support\Settings::listsPeople() )
+		);
+	}
+
+	/**
+	 * Pure: how a listing is alphabetized. An explicit "sort as" wins; people directories use
+	 * the last word of the name first ("Lemar Alejo" → "alejo lemar"); businesses use the name.
+	 *
+	 * @param string $title     Listing name.
+	 * @param string $sort_name Explicit sort name.
+	 * @param bool   $people    People directory.
+	 */
+	public static function sortKey( string $title, string $sort_name, bool $people ): string {
+		$name = trim( '' !== trim( $sort_name ) ? $sort_name : $title );
+		$name = html_entity_decode( wp_strip_all_tags( $name ), ENT_QUOTES, 'UTF-8' );
+		if ( '' === trim( $sort_name ) && $people ) {
+			$parts = preg_split( '/\s+/', $name ) ?: array();
+			if ( count( $parts ) > 1 ) {
+				$last = array_pop( $parts );
+				$name = $last . ' ' . implode( ' ', $parts );
+			}
+		}
+		$name = function_exists( 'remove_accents' ) ? remove_accents( $name ) : $name;
+		$name = (string) preg_replace( '/[^\p{L}\p{N} ]+/u', ' ', $name );
+		return mb_strtolower( trim( (string) preg_replace( '/\s+/', ' ', $name ) ) );
 	}
 
 	/** Recompute every business (activation / upgrade / level reorder). */
@@ -126,8 +157,9 @@ final class Ranking {
 	 * @param string    $meta_key  Meta key.
 	 */
 	public function onMeta( $meta_ids, int $object_id, string $meta_key ): void {
-		if ( ID::meta( 'featured' ) === $meta_key ) {
+		if ( ID::meta( 'featured' ) === $meta_key || ID::meta( 'sort_name' ) === $meta_key ) {
 			self::refresh( $object_id );
+			$this->flushLetters();
 		}
 	}
 

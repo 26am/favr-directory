@@ -24,6 +24,8 @@ $favr_name         = wp_strip_all_tags( $business->name() );
 $favr_cover        = $business->coverId();
 $favr_logo         = $business->logoId();
 $favr_tagline      = $business->text( 'tagline' );
+$favr_org          = $business->text( 'organization' );
+$favr_languages    = $business->languages();
 $favr_categories   = $business->categories();
 $favr_level        = $business->level();
 $favr_phone        = $business->text( 'phone' );
@@ -98,8 +100,21 @@ $favr_show_contact = Settings::sectionEnabled( 'contact' ) && ( $favr_address ||
 					<h1 class="favr-profile__name"><?php echo esc_html( $favr_name ); ?></h1>
 				<?php endif; ?>
 
+				<?php if ( '' !== $favr_org ) : ?>
+					<p class="favr-profile__org"><?php echo esc_html( $favr_org ); ?></p>
+				<?php endif; ?>
+
 				<?php if ( '' !== $favr_tagline ) : ?>
 					<p class="favr-profile__tagline"><?php echo esc_html( $favr_tagline ); ?></p>
+				<?php endif; ?>
+
+				<?php if ( $favr_languages ) : ?>
+					<p class="favr-profile__langs">
+						<span class="favr-profile__langs-label"><?php esc_html_e( 'Speaks', 'favr-directory' ); ?></span>
+						<?php foreach ( $favr_languages as $favr_language ) : ?>
+							<span class="favr-lang"><?php echo esc_html( $favr_language ); ?></span>
+						<?php endforeach; ?>
+					</p>
 				<?php endif; ?>
 
 				<?php if ( $favr_categories ) : ?>

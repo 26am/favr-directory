@@ -96,12 +96,19 @@ final class SettingsPage {
 			'accent_color'      => (string) sanitize_hex_color( (string) ( $input['accent_color'] ?? '' ) ),
 			'sections'          => array_values( array_intersect( array_keys( Settings::sectionChoices() ), array_map( 'strval', (array) ( $input['sections'] ?? array() ) ) ) ),
 			'delete_data'       => empty( $input['delete_data'] ) ? '0' : '1',
+			'listing_kind'      => 'person' === ( $input['listing_kind'] ?? '' ) ? 'person' : 'business',
+			'noun_singular'     => mb_substr( sanitize_text_field( (string) ( $input['noun_singular'] ?? '' ) ), 0, 40 ),
+			'noun_plural'       => mb_substr( sanitize_text_field( (string) ( $input['noun_plural'] ?? '' ) ), 0, 40 ),
 			'member_access'     => self::sanitizeAccess( $input['member_access'] ?? array() ),
 			'claims'            => empty( $input['claims'] ) ? '0' : '1',
 			'notify_email'      => (string) sanitize_email( (string) ( $input['notify_email'] ?? '' ) ),
 			'edit_page'         => absint( $input['edit_page'] ?? 0 ),
 		);
 
+		if ( ( $old['listing_kind'] ?? 'business' ) !== $out['listing_kind'] ) {
+			// Alphabetizing depends on the kind (people sort by last name).
+			add_action( 'shutdown', array( \FavrDirectory\Model\Ranking::class, 'refreshAll' ) );
+		}
 		if ( $out['directory_slug'] !== $old['directory_slug'] || $out['category_slug'] !== $old['category_slug'] ) {
 			update_option( ID::OPTION_FLUSH, 1 );
 		}
@@ -156,6 +163,24 @@ final class SettingsPage {
 									<?php if ( $archive ) : ?>
 										<p class="description"><a href="<?php echo esc_url( $archive ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'View the directory', 'favr-directory' ); ?> ↗</a></p>
 									<?php endif; ?>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><?php esc_html_e( 'Listings are', 'favr-directory' ); ?></th>
+								<td>
+									<fieldset class="favr-radios">
+										<label><input type="radio" name="<?php echo esc_attr( $option ); ?>[listing_kind]" value="business" <?php checked( $s['listing_kind'], 'business' ); ?>> <?php esc_html_e( 'Businesses (chambers of commerce)', 'favr-directory' ); ?></label>
+										<label><input type="radio" name="<?php echo esc_attr( $option ); ?>[listing_kind]" value="person" <?php checked( $s['listing_kind'], 'person' ); ?>> <?php esc_html_e( 'People (bar associations, professional societies)', 'favr-directory' ); ?></label>
+									</fieldset>
+									<p class="description"><?php esc_html_e( 'People directories describe each listing to search engines as a person who works for an organization, and suit the Organization / firm and Languages spoken fields.', 'favr-directory' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="favr-noun"><?php esc_html_e( 'Call listings', 'favr-directory' ); ?></label></th>
+								<td>
+									<input type="text" id="favr-noun" class="regular-text" style="max-width:12em" name="<?php echo esc_attr( $option ); ?>[noun_singular]" value="<?php echo esc_attr( (string) $s['noun_singular'] ); ?>" placeholder="<?php echo esc_attr( Settings::noun( false ) ); ?>">
+									<input type="text" class="regular-text" style="max-width:12em" name="<?php echo esc_attr( $option ); ?>[noun_plural]" value="<?php echo esc_attr( (string) $s['noun_plural'] ); ?>" placeholder="<?php echo esc_attr( Settings::noun( true ) ); ?>" aria-label="<?php esc_attr_e( 'Plural', 'favr-directory' ); ?>">
+									<p class="description"><?php esc_html_e( 'Singular and plural, lowercase, e.g. “attorney” / “attorneys”. Used in counts, search messages and page titles.', 'favr-directory' ); ?></p>
 								</td>
 							</tr>
 							<tr>

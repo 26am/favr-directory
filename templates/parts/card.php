@@ -25,6 +25,8 @@ $favr_level      = $business->level();
 $favr_phone      = $business->text( 'phone' );
 $favr_locality   = $business->locality();
 $favr_summary    = $business->text( 'tagline' ) ?: $business->summary();
+$favr_org        = $business->text( 'organization' );
+$favr_languages  = $business->languages();
 $favr_hours      = $business->hours();
 $favr_open       = $show_open ? $business->isOpenNow() : null;
 $favr_color      = $favr_level ? (string) get_term_meta( $favr_level->term_id, ID::TERM_META_COLOR, true ) : '';
@@ -86,6 +88,9 @@ $favr_color      = $favr_level ? (string) get_term_meta( $favr_level->term_id, I
 			<?php endif; ?>
 			<div class="favr-card__heading">
 				<h3 class="favr-card__title"><a href="<?php echo esc_url( $favr_url ); ?>" class="favr-card__link"><?php echo esc_html( wp_strip_all_tags( $favr_name ) ); ?></a></h3>
+				<?php if ( '' !== $favr_org ) : ?>
+					<p class="favr-card__org"><?php echo esc_html( $favr_org ); ?></p>
+				<?php endif; ?>
 				<?php if ( $favr_categories ) : ?>
 					<p class="favr-card__cats"><?php echo esc_html( implode( ' · ', wp_list_pluck( array_slice( $favr_categories, 0, 3 ), 'name' ) ) ); ?></p>
 				<?php endif; ?>
@@ -94,6 +99,14 @@ $favr_color      = $favr_level ? (string) get_term_meta( $favr_level->term_id, I
 
 		<?php if ( '' !== $favr_summary ) : ?>
 			<p class="favr-card__summary"><?php echo esc_html( wp_trim_words( $favr_summary, 22 ) ); ?></p>
+		<?php endif; ?>
+
+		<?php if ( $favr_languages ) : ?>
+			<ul class="favr-langs" aria-label="<?php esc_attr_e( 'Languages spoken', 'favr-directory' ); ?>">
+				<?php foreach ( $favr_languages as $favr_language ) : ?>
+					<li><?php echo esc_html( $favr_language ); ?></li>
+				<?php endforeach; ?>
+			</ul>
 		<?php endif; ?>
 
 		<ul class="favr-card__meta">

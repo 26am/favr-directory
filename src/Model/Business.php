@@ -200,6 +200,26 @@ final class Business {
 		return array_values( array_filter( array( $street, $locality, $this->text( 'country' ) ) ) );
 	}
 
+	/**
+	 * Languages spoken (from the comma-separated field).
+	 *
+	 * @return list<string>
+	 */
+	public function languages(): array {
+		return self::splitList( $this->text( 'languages' ) );
+	}
+
+	/**
+	 * Pure: split "Spanish, Vietnamese / Mandarin" into clean unique items.
+	 *
+	 * @param string $value Raw.
+	 * @return list<string>
+	 */
+	public static function splitList( string $value ): array {
+		$items = array_map( 'trim', preg_split( '/\s*[,;\/|]\s*/', $value ) ?: array() );
+		return array_values( array_unique( array_filter( $items, static fn( string $item ): bool => '' !== $item ) ) );
+	}
+
 	/** One-line address. */
 	public function addressText(): string {
 		return implode( ', ', $this->addressLines() );

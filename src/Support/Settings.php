@@ -38,6 +38,9 @@ final class Settings {
 			'accent_color'      => '',
 			'sections'          => array_keys( self::sectionChoices() ),
 			'delete_data'       => '0',
+			'listing_kind'      => 'business', // business | person (e.g. attorneys, professionals).
+			'noun_singular'     => '',
+			'noun_plural'       => '',
 			'member_access'     => array(),
 			'claims'            => '1',
 			'notify_email'      => '',
@@ -86,6 +89,27 @@ final class Settings {
 	 */
 	public static function get( string $key ) {
 		return self::all()[ $key ] ?? ( self::defaults()[ $key ] ?? null );
+	}
+
+	/** Listings describe people (bar associations, professional societies) rather than businesses. */
+	public static function listsPeople(): bool {
+		return 'person' === self::get( 'listing_kind' );
+	}
+
+	/**
+	 * What a listing is called on the site ("business"/"businesses", "member"/"members"…).
+	 *
+	 * @param bool $plural Plural form.
+	 */
+	public static function noun( bool $plural = true ): string {
+		$custom = trim( (string) self::get( $plural ? 'noun_plural' : 'noun_singular' ) );
+		if ( '' !== $custom ) {
+			return $custom;
+		}
+		if ( self::listsPeople() ) {
+			return $plural ? __( 'members', 'favr-directory' ) : __( 'member', 'favr-directory' );
+		}
+		return $plural ? __( 'businesses', 'favr-directory' ) : __( 'business', 'favr-directory' );
 	}
 
 	/**

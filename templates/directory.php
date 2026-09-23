@@ -24,6 +24,7 @@ use FavrDirectory\Frontend\Directory;
 use FavrDirectory\Frontend\Icons;
 use FavrDirectory\Frontend\Template;
 use FavrDirectory\Schema\Identifiers as ID;
+use FavrDirectory\Support\Settings;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -58,7 +59,7 @@ if ( '' !== $favr_query ) {
 				<label class="favr-search">
 					<span class="screen-reader-text"><?php esc_html_e( 'Search the directory', 'favr-directory' ); ?></span>
 					<?php echo Icons::svg( 'search', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG. ?>
-					<input type="search" name="<?php echo esc_attr( ID::QV_SEARCH ); ?>" value="<?php echo esc_attr( (string) $args['search'] ); ?>" placeholder="<?php esc_attr_e( 'Search by name, service or keyword…', 'favr-directory' ); ?>" autocomplete="off" data-favr-search>
+					<input type="search" name="<?php echo esc_attr( ID::QV_SEARCH ); ?>" value="<?php echo esc_attr( (string) $args['search'] ); ?>" placeholder="<?php echo esc_attr( Settings::listsPeople() ? __( 'Search by name, organization, practice area, language or city…', 'favr-directory' ) : __( 'Search by name, service or keyword…', 'favr-directory' ) ); ?>" autocomplete="off" data-favr-search>
 				</label>
 
 				<?php if ( $categories ) : ?>
@@ -135,11 +136,12 @@ if ( '' !== $favr_query ) {
 					if ( $favr_total ) {
 						echo esc_html(
 							sprintf(
-								/* translators: 1: first result number, 2: last result number, 3: total results. */
-								_n( 'Showing %1$d–%2$d of %3$d business', 'Showing %1$d–%2$d of %3$d businesses', $favr_total, 'favr-directory' ),
+								/* translators: 1: first result number, 2: last result number, 3: total results, 4: what listings are called (e.g. "businesses", "members"). */
+								__( 'Showing %1$d–%2$d of %3$d %4$s', 'favr-directory' ),
 								$favr_from,
 								$favr_to,
-								$favr_total
+								$favr_total,
+								Settings::noun( 1 !== $favr_total )
 							)
 						);
 					}
@@ -183,10 +185,10 @@ if ( '' !== $favr_query ) {
 		<?php else : ?>
 			<div class="favr-dir__empty">
 				<?php echo Icons::svg( 'search', 40 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG. ?>
-				<p class="favr-dir__empty-title"><?php esc_html_e( 'No businesses found', 'favr-directory' ); ?></p>
+				<p class="favr-dir__empty-title"><?php /* translators: %s: what listings are called, plural. */ echo esc_html( ucfirst( sprintf( __( 'no %s found', 'favr-directory' ), Settings::noun() ) ) ); ?></p>
 				<?php if ( $filtered ) : ?>
 					<p><?php esc_html_e( 'Try a different search term or category.', 'favr-directory' ); ?></p>
-					<a class="favr-btn" href="<?php echo esc_url( $action ); ?>" data-favr-link><?php esc_html_e( 'Show all businesses', 'favr-directory' ); ?></a>
+					<a class="favr-btn" href="<?php echo esc_url( $action ); ?>" data-favr-link><?php /* translators: %s: what listings are called, plural. */ echo esc_html( sprintf( __( 'Show all %s', 'favr-directory' ), Settings::noun() ) ); ?></a>
 				<?php endif; ?>
 			</div>
 		<?php endif; ?>

@@ -195,6 +195,9 @@ final class Seo {
 	 * @return array<string, mixed>
 	 */
 	public static function schema( Business $business ): array {
+		if ( Settings::listsPeople() ) {
+			return self::personSchema( $business );
+		}
 		$data = array(
 			'@type'            => 'LocalBusiness',
 			'@id'              => $business->url() . '#business',
@@ -274,6 +277,78 @@ final class Seo {
 		 * @param array    $data     Schema data.
 		 * @param Business $business Business.
 		 */
+		return (array) apply_filters( 'favr_directory_schema', $data, $business );
+	}
+
+	/**
+	 * Person entity for directories of people (attorneys, professionals).
+	 *
+	 * @param Business $business Listing.
+	 * @return array<string, mixed>
+	 */
+	public static function personSchema( Business $business ): array {
+		$data = array(
+			'@type'            => 'Person',
+			'@id'              => $business->url() . '#person',
+			'name'             => wp_strip_all_tags( $business->name() ),
+			'url'              => $business->url(),
+			'mainEntityOfPage' => $business->url(),
+			'memberOf'         => self::organization(),
+		);
+		if ( '' !== $business->text( 'organization' ) ) {
+			$data['worksFor'] = array(
+				'@type' => 'Organization',
+				'name'  => $business->text( 'organization' ),
+			);
+			if ( '' !== $business->text( 'website' ) ) {
+				$data['worksFor']['url'] = $business->text( 'website' );
+			}
+		}
+		if ( '' !== $business->text( 'contact_title' ) ) {
+			$data['jobTitle'] = $business->text( 'contact_title' );
+		}
+		$summary = $business->summary();
+		if ( '' !== $summary ) {
+			$data['description'] = wp_strip_all_tags( $summary );
+		}
+		if ( '' !== $business->text( 'phone' ) ) {
+			$data['telephone'] = $business->text( 'phone' );
+		}
+		if ( '' !== $business->publicEmail() ) {
+			$data['email'] = $business->publicEmail();
+		}
+		$image = $business->logoId() ?: $business->coverId();
+		if ( $image ) {
+			$data['image'] = (string) wp_get_attachment_image_url( $image, 'full' );
+		}
+		if ( $business->hasAddress() ) {
+			$data['workLocation'] = array(
+				'@type'   => 'Place',
+				'address' => array_filter(
+					array(
+						'@type'           => 'PostalAddress',
+						'streetAddress'   => trim( $business->text( 'address_1' ) . ' ' . $business->text( 'address_2' ) ),
+						'addressLocality' => $business->text( 'city' ),
+						'addressRegion'   => $business->text( 'state' ),
+						'postalCode'      => $business->text( 'postal_code' ),
+						'addressCountry'  => $business->text( 'country' ),
+					)
+				),
+			);
+		}
+		if ( $business->languages() ) {
+			$data['knowsLanguage'] = $business->languages();
+		}
+		$categories = array_map( static fn( \WP_Term $term ): string => html_entity_decode( $term->name, ENT_QUOTES, 'UTF-8' ), $business->categories() );
+		if ( $categories ) {
+			$data['knowsAbout'] = array_values( $categories );
+		}
+		$same_as = array_values( $business->social() );
+		if ( $same_as ) {
+			$data['sameAs'] = $same_as;
+		}
+
+		/** This filter is documented in src/Frontend/Seo.php (schema()). */
 		return (array) apply_filters( 'favr_directory_schema', $data, $business );
 	}
 

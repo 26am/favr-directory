@@ -22,7 +22,7 @@ use FavrDirectory\Schema\Identifiers as ID;
 final class DirectoryQuery {
 
 	/** Meta keys searched alongside title/content. */
-	private const SEARCH_META = array( 'tagline', 'summary', 'city', 'service_area' );
+	private const SEARCH_META = array( 'tagline', 'summary', 'city', 'service_area', 'organization', 'languages' );
 
 	/** Hook the SQL filters. */
 	public static function hook(): void {
@@ -84,8 +84,11 @@ final class DirectoryQuery {
 
 		switch ( $args['order'] ?? 'rank' ) {
 			case 'name':
-				$query['orderby'] = 'title';
-				$query['order']   = 'ASC';
+				$meta[]           = self::sortClause();
+				$query['orderby'] = array(
+					'favr_sort' => 'ASC',
+					'title'     => 'ASC',
+				);
 				break;
 			case 'newest':
 				$query['orderby'] = 'date';
@@ -109,8 +112,10 @@ final class DirectoryQuery {
 						'compare' => 'NOT EXISTS',
 					),
 				);
+				$meta[]           = self::sortClause();
 				$query['orderby'] = array(
 					'favr_rank' => 'ASC',
+					'favr_sort' => 'ASC',
 					'title'     => 'ASC',
 				);
 		}
@@ -128,6 +133,25 @@ final class DirectoryQuery {
 		$query = (array) apply_filters( 'favr_directory_query_args', $query, $args );
 
 		return new \WP_Query( $query );
+	}
+
+	/**
+	 * Meta clause that orders by the sort key without dropping listings that lack one.
+	 *
+	 * @return array<int|string, mixed>
+	 */
+	private static function sortClause(): array {
+		return array(
+			'relation'  => 'OR',
+			'favr_sort' => array(
+				'key'     => Ranking::SORT_KEY,
+				'compare' => 'EXISTS',
+			),
+			array(
+				'key'     => Ranking::SORT_KEY,
+				'compare' => 'NOT EXISTS',
+			),
+		);
 	}
 
 	/**
@@ -161,10 +185,12 @@ final class DirectoryQuery {
 		}
 
 		$letter = (string) $query->get( 'favr_letter' );
+		// Letters follow the sort key (last names in people directories), falling back to the title.
+		$first = "COALESCE( ( SELECT fds.meta_value FROM {$wpdb->postmeta} fds WHERE fds.post_id = {$wpdb->posts}.ID AND fds.meta_key = '" . esc_sql( Ranking::SORT_KEY ) . "' LIMIT 1 ), {$wpdb->posts}.post_title )";
 		if ( '#' === $letter ) {
-			$where .= " AND {$wpdb->posts}.post_title REGEXP '^[0-9]'";
+			$where .= " AND {$first} REGEXP '^[0-9]'";
 		} elseif ( 1 === preg_match( '/^[A-Za-z]$/', $letter ) ) {
-			$where .= $wpdb->prepare( " AND {$wpdb->posts}.post_title LIKE %s", $wpdb->esc_like( strtoupper( $letter ) ) . '%' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name.
+			$where .= $wpdb->prepare( " AND {$first} LIKE %s", $wpdb->esc_like( strtolower( $letter ) ) . '%' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names and constant.
 		}
 
 		return $where;
@@ -184,7 +210,8 @@ final class DirectoryQuery {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- cached below.
 		$rows    = $wpdb->get_col(
 			$wpdb->prepare(
-				"SELECT DISTINCT UPPER( LEFT( post_title, 1 ) ) FROM {$wpdb->posts} WHERE post_type = %s AND post_status = 'publish'",
+				"SELECT DISTINCT UPPER( LEFT( COALESCE( s.meta_value, p.post_title ), 1 ) ) FROM {$wpdb->posts} p LEFT JOIN {$wpdb->postmeta} s ON s.post_id = p.ID AND s.meta_key = %s WHERE p.post_type = %s AND p.post_status = 'publish'",
+				Ranking::SORT_KEY,
 				ID::POST_TYPE
 			)
 		);

@@ -177,18 +177,17 @@ final class ManagersBox {
 			return $user ? $user : new \WP_Error( 'favr_invite', __( 'The account could not be created.', 'favr-directory' ) );
 		}
 
-		$login = sanitize_user( (string) strstr( $email, '@', true ), true );
-		$base  = '' !== $login ? $login : 'member';
-		$n     = 1;
-		while ( username_exists( $login ) || '' === $login ) {
-			$login = $base . ( ++$n );
-		}
+		$base = sanitize_user( (string) strstr( $email, '@', true ), true );
+		$base = '' !== $base ? mb_substr( $base, 0, 40 ) : 'member';
+		do {
+			$login = $base . '-' . wp_rand( 1000, 999999 );
+		} while ( username_exists( $login ) );
 		$user_id = wp_insert_user(
 			array(
 				'user_login' => $login,
 				'user_email' => $email,
 				'user_pass'  => wp_generate_password( 32, true, true ),
-				'role'       => get_option( 'default_role', 'subscriber' ),
+				'role'       => 'subscriber', // Never the site's default role, which may be elevated.
 			)
 		);
 		if ( is_wp_error( $user_id ) ) {

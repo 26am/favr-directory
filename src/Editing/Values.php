@@ -79,7 +79,7 @@ final class Values {
 			case 'business_name':
 				return mb_substr( sanitize_text_field( is_string( $raw ) ? $raw : '' ), 0, 120 );
 			case 'description':
-				return trim( wp_kses( is_string( $raw ) ? $raw : '', self::descriptionHtml() ) );
+				return self::cleanDescription( is_string( $raw ) ? $raw : '' );
 			case 'categories':
 				$valid = get_terms(
 					array(
@@ -156,6 +156,11 @@ final class Values {
 	 * @return mixed
 	 */
 	public static function effective( string $id, $value ) {
+		if ( 'description' === $id ) {
+			// Compare as a representative could have written it, so line endings and markup the
+			// form can't express never look like a change.
+			return self::cleanDescription( is_string( $value ) ? $value : '' );
+		}
 		$item = self::item( $id );
 		if ( $item && 'toggle' === $item['type'] ) {
 			if ( '' === $value || null === $value ) {
@@ -188,7 +193,8 @@ final class Values {
 	 * @param mixed  $value Value.
 	 */
 	public static function display( string $id, $value ): string {
-		$item = self::item( $id );
+		$value = self::effective( $id, $value );
+		$item  = self::item( $id );
 		if ( ! $item ) {
 			return '';
 		}
@@ -263,22 +269,39 @@ final class Values {
 	}
 
 	/**
+	 * Description as stored from the front end: allowed tags only, LF line endings, no block
+	 * comments, trimmed.
+	 *
+	 * @param string $html Raw.
+	 */
+	public static function cleanDescription( string $html ): string {
+		$html = str_replace( array( "\r\n", "\r" ), "\n", $html );
+		$html = (string) preg_replace( '/<!--.*?-->/s', '', $html );
+		$html = wp_kses( $html, self::descriptionHtml() );
+		return trim( (string) preg_replace( "/\n{3,}/", "\n\n", $html ) );
+	}
+
+	/**
 	 * Tags allowed in a representative-written description.
 	 *
 	 * @return array<string, array<string, bool>>
 	 */
 	public static function descriptionHtml(): array {
 		return array(
-			'p'      => array(),
-			'br'     => array(),
-			'strong' => array(),
-			'b'      => array(),
-			'em'     => array(),
-			'i'      => array(),
-			'ul'     => array(),
-			'ol'     => array(),
-			'li'     => array(),
-			'a'      => array( 'href' => true ),
+			'p'          => array(),
+			'br'         => array(),
+			'strong'     => array(),
+			'b'          => array(),
+			'em'         => array(),
+			'i'          => array(),
+			'ul'         => array(),
+			'ol'         => array(),
+			'li'         => array(),
+			'a'          => array( 'href' => true ),
+			'h2'         => array(),
+			'h3'         => array(),
+			'h4'         => array(),
+			'blockquote' => array(),
 		);
 	}
 }

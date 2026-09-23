@@ -40,6 +40,8 @@ final class FrontEditor {
 		add_action( 'template_redirect', array( $this, 'noCache' ) );
 		add_filter( 'favr_members_dashboard_tabs', array( $this, 'dashboardTab' ), 10, 2 );
 		add_action( 'save_post_page', array( self::class, 'forgetPage' ) );
+		// Public API for sibling plugins (e.g. Favr Events: which businesses may a person host for).
+		add_filter( 'favr_directory_listings_for_user', static fn( $ids, $user_id ): array => array_merge( (array) $ids, Editors::listingsFor( (int) $user_id ) ), 10, 2 );
 	}
 
 	/**
@@ -113,6 +115,9 @@ final class FrontEditor {
 		$post = get_queried_object();
 		if ( is_singular() && $post instanceof \WP_Post && ( has_shortcode( $post->post_content, self::SHORTCODE ) || has_block( 'favr-directory/my-listing', $post ) ) ) {
 			nocache_headers();
+			if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+				define( 'DONOTCACHEPAGE', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- page-cache convention.
+			}
 		}
 	}
 

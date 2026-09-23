@@ -54,6 +54,7 @@ final class Policy {
 		'latitude',
 		'longitude',
 		'video_url',
+		'gallery',
 	);
 
 	/** Staff-only by default. */
@@ -132,6 +133,9 @@ final class Policy {
 			if ( ! empty( $field['private'] ) ) {
 				return self::NONE; // Staff-only data is never exposed, whatever the settings say.
 			}
+			if ( self::hasNestedMedia( $field ) ) {
+				return self::NONE; // Attachment ownership is only checked on top-level image fields.
+			}
 		}
 		$overrides = (array) Settings::get( 'member_access' );
 		$level     = isset( $overrides[ $id ] ) && in_array( $overrides[ $id ], self::LEVELS, true ) ? (string) $overrides[ $id ] : self::defaultFor( $id );
@@ -144,6 +148,20 @@ final class Policy {
 		 */
 		$level = (string) apply_filters( 'favr_directory_member_access', $level, $id );
 		return in_array( $level, self::LEVELS, true ) ? $level : self::NONE;
+	}
+
+	/**
+	 * Whether a repeater carries image/gallery sub-fields.
+	 *
+	 * @param array<string, mixed> $field Field.
+	 */
+	private static function hasNestedMedia( array $field ): bool {
+		foreach ( (array) ( $field['sub_fields'] ?? array() ) as $sub ) {
+			if ( in_array( $sub['type'] ?? '', array( 'image', 'gallery' ), true ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

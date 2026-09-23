@@ -37,6 +37,7 @@ final class ChangeQueue {
 			'capability' => 'edit_others_' . ID::CAP_TYPE_PLURAL,
 			'items'      => array( $this, 'items' ),
 			'decide'     => array( $this, 'decide' ),
+			'count'      => static fn(): int => count( self::pendingIds() ),
 		);
 		return $providers;
 	}
@@ -101,9 +102,19 @@ final class ChangeQueue {
 				'time'     => $time,
 				'details'  => Inbox::diff( $rows ),
 				'fields'   => $fields,
+				'version'  => self::version( $pending ),
 			);
 		}
 		return $items;
+	}
+
+	/**
+	 * Fingerprint of what a reviewer sees.
+	 *
+	 * @param array<string, mixed> $pending Pending changes.
+	 */
+	public static function version( array $pending ): string {
+		return md5( (string) wp_json_encode( $pending ) );
 	}
 
 	/**
@@ -113,10 +124,14 @@ final class ChangeQueue {
 	 * @param string            $decision approve | reject.
 	 * @param list<string>|null $fields   Ticked fields, or null for all.
 	 * @param string            $note     Note for the representative.
+	 * @param string            $version  Fingerprint the reviewer saw.
 	 */
-	public function decide( int $post_id, string $decision, ?array $fields, string $note ): string {
+	public function decide( int $post_id, string $decision, ?array $fields, string $note, string $version = '' ): string {
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
 			return __( 'You can’t edit that listing.', 'favr-directory' );
+		}
+		if ( self::version( PendingChanges::get( $post_id ) ) !== $version ) {
+			return __( 'Those suggestions changed while you were reviewing them, so nothing was applied. Please look again.', 'favr-directory' );
 		}
 		if ( 'approve' === $decision && is_array( $fields ) && array() === $fields ) {
 			return __( 'Nothing was selected, so nothing changed.', 'favr-directory' );
@@ -128,8 +143,12 @@ final class ChangeQueue {
 
 		$by_user = array();
 		foreach ( $taken as $id => $change ) {
-			if ( 'approve' === $decision ) {
+			// Settings may have changed since the suggestion was made: never write a field
+			// representatives can no longer touch.
+			if ( 'approve' === $decision && Policy::NONE !== Policy::access( (string) $id ) ) {
 				Values::apply( $post_id, (string) $id, $change['new'] );
+			} else {
+				self::discardUploads( $post_id, (string) $id, $change );
 			}
 			$by_user[ (int) $change['user'] ][] = (string) $id;
 		}
@@ -152,6 +171,23 @@ final class ChangeQueue {
 			count( $ids ),
 			get_the_title( $post_id )
 		);
+	}
+
+	/**
+	 * Delete images a representative uploaded only for a suggestion that was turned down.
+	 *
+	 * @param int                  $post_id Business.
+	 * @param string               $id      Item id.
+	 * @param array<string, mixed> $change  The discarded change.
+	 */
+	private static function discardUploads( int $post_id, string $id, array $change ): void {
+		$live = Values::attachments( $id, Values::current( $post_id, $id ) );
+		foreach ( array_diff( Values::attachments( $id, $change['new'] ?? null ), $live ) as $attachment ) {
+			$post = get_post( $attachment );
+			if ( $post && 'attachment' === $post->post_type && (int) $post->post_author === (int) $change['user'] && (int) $post->post_parent === $post_id && ! user_can( (int) $change['user'], 'upload_files' ) ) {
+				wp_delete_attachment( $attachment, true );
+			}
+		}
 	}
 
 	/** On the business edit screen, point staff at waiting suggestions. */

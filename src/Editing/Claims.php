@@ -177,6 +177,11 @@ final class Claims {
 			'capability' => 'edit_others_' . ID::CAP_TYPE_PLURAL,
 			'items'      => array( $this, 'items' ),
 			'decide'     => array( $this, 'decide' ),
+			'count'      => static function (): int {
+				global $wpdb;
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- tiny indexed count for the menu badge.
+				return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s", self::META ) );
+			},
 		);
 		return $providers;
 	}
@@ -197,15 +202,33 @@ final class Claims {
 			if ( ! $user || ID::POST_TYPE !== get_post_type( (int) $row->post_id ) ) {
 				continue;
 			}
-			$managers = array_filter( array_map( static fn( int $u ): string => (string) ( get_userdata( $u )->display_name ?? '' ), Editors::managers( (int) $row->post_id ) ) );
-			$details  = sprintf(
-				'<p><strong>%1$s</strong> &lt;%2$s&gt;</p>%3$s%4$s',
+			/**
+			 * Everyone who can already edit the listing (listing managers plus, e.g., the linked
+			 * member's representatives from Favr Members).
+			 *
+			 * @param list<int> $user_ids User ids.
+			 * @param int       $post_id  Business.
+			 */
+			$current  = array_unique( array_map( 'intval', (array) apply_filters( 'favr_directory_representatives', Editors::managers( (int) $row->post_id ), (int) $row->post_id ) ) );
+			$managers = array_filter( array_map( static fn( int $u ): string => (string) ( get_userdata( $u )->display_name ?? '' ), $current ) );
+
+			/**
+			 * Extra context for staff reviewing a claim (e.g. what approving will grant).
+			 *
+			 * @param string $note    Plain text.
+			 * @param int    $post_id Business.
+			 * @param int    $user_id Claimant.
+			 */
+			$note    = (string) apply_filters( 'favr_directory_claim_note', '', (int) $row->post_id, (int) $user->ID );
+			$details = sprintf(
+				'<p><strong>%1$s</strong> &lt;%2$s&gt;</p>%3$s%4$s%5$s',
 				esc_html( $user->display_name ),
 				esc_html( $user->user_email ),
 				'' !== (string) $claim['message'] ? '<blockquote>' . nl2br( esc_html( (string) $claim['message'] ) ) . '</blockquote>' : '',
-				$managers ? '<p>' . esc_html( sprintf( /* translators: %s: names. */ __( 'Current managers: %s', 'favr-directory' ), implode( ', ', $managers ) ) ) . '</p>' : ''
+				'<p>' . esc_html( $managers ? sprintf( /* translators: %s: names. */ __( 'Can already edit this listing: %s', 'favr-directory' ), implode( ', ', $managers ) ) : __( 'Nobody manages this listing yet.', 'favr-directory' ) ) . '</p>',
+				'' !== $note ? '<p class="description">' . esc_html( $note ) . '</p>' : ''
 			);
-			$items[]  = array(
+			$items[] = array(
 				'id'       => (int) $row->meta_id,
 				'title'    => get_the_title( (int) $row->post_id ),
 				/* translators: %s: person. */

@@ -187,8 +187,8 @@ final class Directory {
 			$by_parent[ (int) $term->parent ][] = $term;
 		}
 		$out  = array();
-		$walk = static function ( int $parent, int $depth ) use ( &$walk, &$out, $by_parent ): void {
-			foreach ( $by_parent[ $parent ] ?? array() as $term ) {
+		$walk = static function ( int $parent_id, int $depth ) use ( &$walk, &$out, $by_parent ): void {
+			foreach ( $by_parent[ $parent_id ] ?? array() as $term ) {
 				$out[] = array(
 					'slug'  => $term->slug,
 					'name'  => $term->name,

@@ -51,12 +51,12 @@ final class EditScreen {
 	/**
 	 * Classic editor for businesses unless a site opts in to the block editor.
 	 *
-	 * @param bool   $use       Current decision.
+	 * @param bool   $use_block Current decision.
 	 * @param string $post_type Post type.
 	 */
-	public function useBlockEditor( bool $use, string $post_type ): bool {
+	public function useBlockEditor( bool $use_block, string $post_type ): bool {
 		if ( ID::POST_TYPE !== $post_type ) {
-			return $use;
+			return $use_block;
 		}
 		/**
 		 * Use the block editor for businesses (the profile panel then appears below it).

@@ -28,12 +28,12 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/autoload.php';
 } else {
 	spl_autoload_register(
-		static function ( string $class ): void {
+		static function ( string $class_name ): void {
 			$prefix = 'FavrDirectory\\';
-			if ( strncmp( $class, $prefix, strlen( $prefix ) ) !== 0 ) {
+			if ( strncmp( $class_name, $prefix, strlen( $prefix ) ) !== 0 ) {
 				return;
 			}
-			$file = __DIR__ . '/src/' . str_replace( '\\', '/', substr( $class, strlen( $prefix ) ) ) . '.php';
+			$file = __DIR__ . '/src/' . str_replace( '\\', '/', substr( $class_name, strlen( $prefix ) ) ) . '.php';
 			if ( is_readable( $file ) ) {
 				require_once $file;
 			}

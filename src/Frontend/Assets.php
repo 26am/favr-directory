@@ -102,6 +102,7 @@ final class Assets {
 		if ( '' === $accent || ! sanitize_hex_color( $accent ) ) {
 			return '';
 		}
-		return '.favr-dir,.favr-profile{--favr-accent:' . $accent . ';}';
+		// A root variable, so a per-widget --favr-brand (Elementor) can still override it.
+		return ':root{--favr-directory-accent:' . $accent . ';}';
 	}
 }

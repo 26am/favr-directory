@@ -1,12 +1,13 @@
 /*
  * Favr Directory — front end.
  * Inherits the theme's fonts and colors; everything is scoped under .favr-dir / .favr-profile.
- * Tune with custom properties, e.g. .favr-dir { --favr-accent: #0a7; --favr-radius: 4px; }
+ * Tune with custom properties, e.g. .favr-dir { --favr-radius: 4px; }. The accent comes from
+ * --favr-brand (set per widget in Elementor), then the Directory setting, then the theme.
  */
 
 .favr-dir,
 .favr-profile {
-	--favr-accent: var(--wp--preset--color--primary, #1f5fbf);
+	--favr-accent: var(--favr-brand, var(--favr-directory-accent, var(--wp--preset--color--primary, #1f5fbf)));
 	--favr-accent-contrast: #fff;
 	--favr-text: currentColor;
 	--favr-muted: color-mix(in srgb, currentColor 62%, transparent);
@@ -1449,7 +1450,7 @@ a.favr-contact__sub {
 
 .favr-owner,
 .favr-my-listing {
-	--favr-accent: var(--wp--preset--color--primary, #1f5fbf);
+	--favr-accent: var(--favr-brand, var(--favr-directory-accent, var(--wp--preset--color--primary, #1f5fbf)));
 	--favr-border: color-mix(in srgb, currentColor 14%, transparent);
 	--favr-soft: color-mix(in srgb, currentColor 4%, transparent);
 	--favr-radius: 14px;

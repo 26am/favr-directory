@@ -50,6 +50,9 @@ final class Plugin {
 		( new Frontend\Shortcodes() )->hook();
 		( new Frontend\Seo() )->hook();
 
+		( new Integration\Elementor() )->hook();
+		( new Integration\BlockBindings() )->hook();
+
 		( new Editing\FrontEditor() )->hook();
 		( new Editing\UploadRoute() )->hook();
 		( new Editing\Claims() )->hook();

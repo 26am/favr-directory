@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "favr-directory/business-profile",
+	"title": "Business Profile",
+	"category": "theme",
+	"icon": "id-alt",
+	"description": "The full profile of the current business: contact details, hours, map, gallery and more.",
+	"keywords": [ "business", "directory", "profile" ],
+	"textdomain": "favr-directory",
+	"usesContext": [ "postId", "postType" ],
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"spacing": { "margin": true, "padding": true }
+	},
+	"editorScript": "favr-directory-blocks",
+	"style": "favr-directory"
+}

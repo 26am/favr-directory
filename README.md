@@ -80,6 +80,25 @@ Theme support: block themes get registered templates (`single-favr_business`,
 Classic themes get PHP templates. If a theme or page builder owns the single template, the profile
 is injected through `the_content`.
 
+## Page builders
+
+Every feature works as a **block**, an **Elementor widget** (when Elementor is active) and a
+shortcode, all rendered by the same code. See [ADR 0002](docs/adr/0002-page-builder-integration.md).
+
+| Feature | Block | Elementor widget | Shortcode |
+| --- | --- | --- | --- |
+| Directory | Business Directory | Business Directory | `[favr_directory]` |
+| One business | Business Profile | Business Profile | `[favr_business id="…"]` |
+| One value (phone, hours, map, social, logo…) | block bindings (below) | Business Field | `[favr_business_field field="…"]` |
+| Representative editing | My Listing | My Listing | `[favr_my_listing]` |
+
+- **Elementor Pro Theme Builder:** dynamic tags under *Favr Directory* (Business Field, Business
+  Link, Business Image) for custom single-business templates.
+- **Block themes:** bind core blocks to business data with the `favr-directory/business` source,
+  e.g. `{"metadata":{"bindings":{"content":{"source":"favr-directory/business","args":{"key":"phone"}}}}}`.
+- Each widget has an **Accent color**; with Favr Members active, every Elementor element also gets
+  a *Favr Members: Visibility* setting.
+
 ## Customizing
 
 - **Templates:** copy any file from `templates/` into `yourtheme/favr-directory/` (e.g.

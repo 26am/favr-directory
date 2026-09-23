@@ -1,6 +1,6 @@
 # Favr Suite — Directory, Members, Events
 
-- **Status:** Draft for review
+- **Status:** Favr Directory ✅ built · Favr Members v1 ✅ built ([26am/favr-members](https://github.com/26am/favr-members)) · favr/core ✅ ([26am/favr-core](https://github.com/26am/favr-core)) · Directory front-end editing and Favr Events: next
 - **Date:** 2026-09-23
 - **Scope:** How the three Favr Sites plugins divide responsibilities and connect. It also covers member front-end editing of listings and member event submissions.
 - **Out of scope:** Payments and dues collection. Membership status is set by staff; the chamber invoices outside the site.

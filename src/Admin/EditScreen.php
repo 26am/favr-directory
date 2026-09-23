@@ -151,6 +151,10 @@ final class EditScreen {
 			}
 
 			foreach ( FieldRegistry::forTab( (string) $tab_id ) as $field ) {
+				if ( self::isLocked( (string) $field['id'], $post ) ) {
+					$this->renderLocked( $field, $business->text( (string) $field['id'] ), $post );
+					continue;
+				}
 				$this->renderer->render( $field, $business->field( (string) $field['id'] ) );
 			}
 
@@ -224,11 +228,69 @@ final class EditScreen {
 	}
 
 	/**
+	 * URL of the record that manages this listing's membership data ('' = managed here).
+	 * Favr Members supplies it for listings linked to a business member.
+	 *
+	 * @param \WP_Post $post Listing.
+	 */
+	public static function managerUrl( \WP_Post $post ): string {
+		/**
+		 * Filter the edit URL of the record that owns this listing's membership data.
+		 * A non-empty URL makes level, member since, renewal date and member ID read-only.
+		 *
+		 * @param string   $url  Default ''.
+		 * @param \WP_Post $post Listing.
+		 */
+		return (string) apply_filters( 'favr_directory_membership_manager_url', '', $post );
+	}
+
+	/**
+	 * Whether a field is managed elsewhere for this listing.
+	 *
+	 * @param string   $field_id Field id.
+	 * @param \WP_Post $post     Listing.
+	 */
+	public static function isLocked( string $field_id, \WP_Post $post ): bool {
+		return in_array( $field_id, array( 'member_since', 'renewal_date', 'member_id' ), true ) && '' !== self::managerUrl( $post );
+	}
+
+	/**
+	 * Read-only display of a managed field.
+	 *
+	 * @param array<string, mixed> $field Field.
+	 * @param string               $value Value.
+	 * @param \WP_Post             $post  Listing.
+	 */
+	private function renderLocked( array $field, string $value, \WP_Post $post ): void {
+		printf(
+			'<div class="favr-field favr-w-%1$s favr-field--locked"><span class="favr-field__label">%2$s <span class="dashicons dashicons-lock" aria-hidden="true"></span></span><div class="favr-field__readonly">%3$s</div><p class="favr-field__help">%4$s <a href="%5$s">%6$s</a></p></div>',
+			esc_attr( (string) $field['width'] ),
+			esc_html( (string) $field['label'] ),
+			esc_html( '' !== $value ? $value : '—' ),
+			esc_html__( 'Managed on the member record.', 'favr-directory' ),
+			esc_url( self::managerUrl( $post ) ),
+			esc_html__( 'Edit member →', 'favr-directory' )
+		);
+	}
+
+	/**
 	 * Single-choice membership level.
 	 *
 	 * @param \WP_Post $post Post.
 	 */
 	public function renderLevel( \WP_Post $post ): void {
+		$manager = self::managerUrl( $post );
+		if ( '' !== $manager ) {
+			$terms = wp_get_object_terms( $post->ID, ID::TAX_LEVEL );
+			printf(
+				'<p><strong>%1$s</strong></p><p class="description">%2$s <a href="%3$s">%4$s</a></p>',
+				esc_html( is_array( $terms ) && isset( $terms[0] ) ? $terms[0]->name : __( 'None', 'favr-directory' ) ),
+				esc_html__( 'Set on the member record.', 'favr-directory' ),
+				esc_url( $manager ),
+				esc_html__( 'Edit member →', 'favr-directory' )
+			);
+			return;
+		}
 		$levels  = get_terms(
 			array(
 				'taxonomy'   => ID::TAX_LEVEL,
@@ -300,6 +362,9 @@ final class EditScreen {
 		$warnings = array();
 
 		foreach ( FieldRegistry::all() as $id => $field ) {
+			if ( self::isLocked( (string) $id, $post ) ) {
+				continue; // Owned by another plugin (e.g. Favr Members); never overwrite.
+			}
 			$raw   = $input[ $id ] ?? null;
 			$value = Sanitizer::sanitize( $field, $raw );
 
@@ -314,7 +379,7 @@ final class EditScreen {
 			}
 		}
 
-		if ( isset( $_POST['favr_level'] ) && current_user_can( 'edit_' . ID::CAP_TYPE_PLURAL ) ) {
+		if ( isset( $_POST['favr_level'] ) && '' === self::managerUrl( $post ) && current_user_can( 'edit_' . ID::CAP_TYPE_PLURAL ) ) {
 			$level = absint( wp_unslash( $_POST['favr_level'] ) );
 			wp_set_object_terms( $post_id, $level > 0 ? array( $level ) : array(), ID::TAX_LEVEL );
 		}

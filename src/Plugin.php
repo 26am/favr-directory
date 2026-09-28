@@ -51,6 +51,7 @@ final class Plugin {
 		( new Frontend\Seo() )->hook();
 
 		( new Integration\Elementor() )->hook();
+		( new Integration\FavrSites() )->hook();
 		( new Integration\BlockBindings() )->hook();
 
 		( new Editing\FrontEditor() )->hook();

@@ -32,8 +32,8 @@ final class FavrSites {
 	public function actions( array $actions ): array {
 		$actions[] = array(
 			'id'         => 'add-listing',
-			/* translators: %s: what a listing is called, e.g. "business" or "member". */
-			'label'      => sprintf( __( 'Add %s', 'favr-directory' ), Settings::noun( false ) ),
+			// Not "Add member": on people directories Favr Members adds its own "Add member" (a member record).
+			'label'      => __( 'Add directory listing', 'favr-directory' ),
 			'url'        => admin_url( 'post-new.php?post_type=' . ID::POST_TYPE ),
 			'capability' => 'edit_' . ID::CAP_TYPE_PLURAL,
 			'icon'       => 'store',

@@ -20,13 +20,13 @@ Favr Directory lets chamber and association staff manage member businesses from 
 * Profiles with an "Open now" badge, map, directions, photo lightbox and schema.org structured data.
 * CSV import and export, WP-CLI commands and a Directory Manager role.
 * Front-end editing for business representatives: live edits or staff-approved suggestions per field, photo uploads, and "Claim this listing".
-* Business Directory and Business Profile blocks, shortcodes for page builders, and overridable templates.
+* Directory and Listing profile blocks, shortcodes for page builders, and overridable templates.
 
 == Installation ==
 
 1. Upload the plugin and activate it.
 2. Go to Directory → Add listing.
-3. Visit /directory/ on your site, or add the Business Directory block to any page.
+3. Visit /directory/ on your site, or add the Directory block to any page.
 
 == Changelog ==
 

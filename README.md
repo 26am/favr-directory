@@ -73,9 +73,9 @@ WordPress admin, and visitors get a fast, searchable directory with rich busines
 | Where | How |
 | --- | --- |
 | Automatic | `/directory/`, `/directory/category/{slug}/`, `/directory/{business}/` |
-| Block editor | **Business Directory** block (filters, featured-only, layout, order…) and **Business Profile** block |
+| Block editor | **Directory** block (filters, featured-only, layout, order…) and **Listing profile** block |
 | Shortcodes | `[favr_directory]`, `[favr_directory featured="1" per_page="6" search="0" letters="0"]`, `[favr_directory category="restaurants" layout="list"]` |
-| Representative editing | **My Listing** block or `[favr_my_listing]` (also a Favr Members dashboard tab) |
+| Representative editing | **My listing (edit form)** block or `[favr_my_listing]` (also a Favr Members dashboard tab) |
 | Page builders (Elementor, etc.) | `[favr_business id="123"]` for a whole profile, `[favr_business_field field="phone"]` for one value (also `address`, `hours`, `map`, `social`, `logo`, `categories`, `level`, any field id) |
 
 Theme support: block themes get registered templates (`single-favr_business`,
@@ -90,13 +90,13 @@ shortcode, all rendered by the same code. See [ADR 0002](docs/adr/0002-page-buil
 
 | Feature | Block | Elementor widget | Shortcode |
 | --- | --- | --- | --- |
-| Directory | Business Directory | Business Directory | `[favr_directory]` |
-| One business | Business Profile | Business Profile | `[favr_business id="…"]` |
-| One value (phone, hours, map, social, logo…) | block bindings (below) | Business Field | `[favr_business_field field="…"]` |
-| Representative editing | My Listing | My Listing | `[favr_my_listing]` |
+| Directory | Directory | Directory | `[favr_directory]` |
+| One listing | Listing profile | Listing profile | `[favr_business id="…"]` |
+| One value (phone, hours, map, social, logo…) | block bindings (below) | Listing field | `[favr_business_field field="…"]` |
+| Representative editing | My listing (edit form) | My listing (edit form) | `[favr_my_listing]` |
 
-- **Elementor Pro Theme Builder:** dynamic tags under *Favr Directory* (Business Field, Business
-  Link, Business Image) for custom single-business templates.
+- **Elementor Pro Theme Builder:** dynamic tags under *Favr Directory* (Listing field, Listing
+  link, Listing image) for custom single-listing templates.
 - **Block themes:** bind core blocks to business data with the `favr-directory/business` source,
   e.g. `{"metadata":{"bindings":{"content":{"source":"favr-directory/business","args":{"key":"phone"}}}}}`.
 - Each widget has an **Accent color**; with Favr Members active, every Elementor element also gets

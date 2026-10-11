@@ -34,6 +34,7 @@ Favr Directory lets chamber and association staff manage member businesses from 
 * Staff screens say "listing" in sentence case, whatever the directory lists: Directory → All listings, Add listing, Categories; "Edit listing", "View listing", "Listing published."; the list screen is titled "Directory" (on a directory of people it was "Members", like the Members menu). Categories are "Directory categories"; membership levels follow the same style. Public pages, REST and the front-end forms keep the directory's own noun.
 * Fields and tabs can carry an `admin_label` / `admin_description` for the staff edit screen.
 * Fixed "$(...).sortable is not a function" on the listings list, category, level and settings screens.
+* Fixed: updating the plugin no longer removes capabilities other plugins gave the Directory Manager role (Favr Members lets Directory Managers manage members).
 
 = 1.2.0 =
 * Directory card and "Add listing" button on the Favr dashboard (Favr Sites plugin).

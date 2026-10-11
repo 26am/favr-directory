@@ -40,7 +40,14 @@ final class Capabilities {
 		);
 	}
 
-	/** Grant caps to administrators/editors and create the Directory Manager role. Idempotent. */
+	/**
+	 * Grant caps to administrators/editors and make sure the Directory Manager role has its own.
+	 * Idempotent; runs on activation and on every version upgrade.
+	 *
+	 * The role is never removed and re-created: other plugins add their capabilities to it (Favr
+	 * Members lets Directory Managers manage members), and a Directory update must not take
+	 * those away.
+	 */
 	public static function install(): void {
 		foreach ( array( 'administrator', 'editor' ) as $role_name ) {
 			$role = get_role( $role_name );
@@ -60,8 +67,16 @@ final class Capabilities {
 		$caps['read']         = true;
 		$caps['upload_files'] = true;
 
-		remove_role( ID::ROLE_MANAGER );
-		add_role( ID::ROLE_MANAGER, __( 'Directory Manager', 'favr-directory' ), $caps );
+		$manager = get_role( ID::ROLE_MANAGER );
+		if ( ! $manager ) {
+			add_role( ID::ROLE_MANAGER, __( 'Directory Manager', 'favr-directory' ), $caps );
+			return;
+		}
+		foreach ( array_keys( $caps ) as $cap ) {
+			if ( ! $manager->has_cap( $cap ) ) {
+				$manager->add_cap( $cap );
+			}
+		}
 	}
 
 	/** Remove every trace of our caps and role (uninstall only). */

@@ -29,6 +29,16 @@ use FavrDirectory\Support\Completeness;
 final class EditScreen {
 
 	/**
+	 * WordPress boxes this screen drops because the panel does their job.
+	 *
+	 * Never `slugdiv`: WordPress keeps the `post_name` field inside its Slug box, and "Edit" on the
+	 * permalink under the title saves through that field, so without the box a new address is
+	 * dropped on Update. WordPress hides the box by default; Favr Sites removes it for Editors and
+	 * prints the one field itself, so no second `post_name` may be printed here.
+	 */
+	public const REMOVED_BOXES = array( 'postexcerpt', 'postcustom', 'authordiv' );
+
+	/**
 	 * Field input renderer.
 	 *
 	 * @var FieldRenderer
@@ -97,10 +107,9 @@ final class EditScreen {
 	 * @param \WP_Post $post Post.
 	 */
 	public function metaBoxes( \WP_Post $post ): void {
-		remove_meta_box( 'postexcerpt', ID::POST_TYPE, 'normal' );
-		remove_meta_box( 'postcustom', ID::POST_TYPE, 'normal' );
-		remove_meta_box( 'slugdiv', ID::POST_TYPE, 'normal' );
-		remove_meta_box( 'authordiv', ID::POST_TYPE, 'normal' );
+		foreach ( self::REMOVED_BOXES as $box ) {
+			remove_meta_box( $box, ID::POST_TYPE, 'normal' );
+		}
 
 		add_meta_box( 'favr-health', __( 'Listing health', 'favr-directory' ), array( $this, 'renderHealth' ), ID::POST_TYPE, 'side', 'default' );
 		add_meta_box( 'favr-level', __( 'Membership level', 'favr-directory' ), array( $this, 'renderLevel' ), ID::POST_TYPE, 'side', 'default' );

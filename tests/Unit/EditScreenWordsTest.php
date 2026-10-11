@@ -53,6 +53,16 @@ final class EditScreenWordsTest extends TestCase {
 		$this->assertSame( 'Listing published. <a href="https://example.org/directory/elena-marquez/">View listing</a>', $messages[6] );
 	}
 
+	/**
+	 * WordPress keeps the `post_name` field inside its Slug box, and "Edit" on the permalink under
+	 * the title saves through that field: without the box an Administrator's new address was
+	 * dropped on Update. (Favr Sites takes the box away for Editors and prints the field itself.)
+	 */
+	public function test_the_slug_box_stays_so_the_permalink_under_the_title_saves(): void {
+		$this->assertNotContains( 'slugdiv', EditScreen::REMOVED_BOXES );
+		$this->assertSame( array( 'postexcerpt', 'postcustom', 'authordiv' ), EditScreen::REMOVED_BOXES );
+	}
+
 	public function test_the_title_field_asks_for_the_listing_name(): void {
 		$screen = new EditScreen();
 		$this->assertSame( 'Listing name', $screen->missingLabels()['title'] );

@@ -35,6 +35,7 @@ Favr Directory lets chamber and association staff manage member businesses from 
 * Fields and tabs can carry an `admin_label` / `admin_description` for the staff edit screen.
 * Fixed "$(...).sortable is not a function" on the listings list, category, level and settings screens.
 * Fixed: updating the plugin no longer removes capabilities other plugins gave the Directory Manager role (Favr Members lets Directory Managers manage members).
+* Fixed: "Edit" on the permalink under a listing's name now saves. The plugin used to remove WordPress's Slug box, which holds the field that edit is saved through, so a new address was dropped on Update.
 
 = 1.2.0 =
 * Directory card and "Add listing" button on the Favr dashboard (Favr Sites plugin).

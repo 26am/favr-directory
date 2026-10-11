@@ -33,7 +33,7 @@ final class BlockBindings {
 		register_block_bindings_source(
 			'favr-directory/business',
 			array(
-				'label'              => __( 'Business (Favr Directory)', 'favr-directory' ),
+				'label'              => __( 'Listing (Favr Directory)', 'favr-directory' ),
 				'get_value_callback' => array( $this, 'value' ),
 				'uses_context'       => array( 'postId', 'postType' ),
 			)

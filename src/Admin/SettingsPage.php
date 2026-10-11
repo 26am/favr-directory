@@ -338,7 +338,7 @@ final class SettingsPage {
 						<h2><?php esc_html_e( 'Show the directory anywhere', 'favr-directory' ); ?></h2>
 						<p><?php esc_html_e( 'The directory lives at its own URL automatically. You can also place it on any page:', 'favr-directory' ); ?></p>
 						<ul class="favr-help">
-							<li><strong><?php esc_html_e( 'Block editor:', 'favr-directory' ); ?></strong> <?php esc_html_e( 'add the “Business Directory” block.', 'favr-directory' ); ?></li>
+							<li><strong><?php esc_html_e( 'Block editor:', 'favr-directory' ); ?></strong> <?php esc_html_e( 'add the “Directory” block.', 'favr-directory' ); ?></li>
 							<li><strong><?php esc_html_e( 'Shortcode:', 'favr-directory' ); ?></strong> <code>[favr_directory]</code></li>
 							<li><?php esc_html_e( 'Featured only:', 'favr-directory' ); ?> <code>[favr_directory featured="1" per_page="6" search="0"]</code></li>
 							<li><?php esc_html_e( 'One category:', 'favr-directory' ); ?> <code>[favr_directory category="restaurants"]</code></li>

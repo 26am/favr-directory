@@ -73,14 +73,14 @@
 							}
 						} ),
 						el( C.ToggleControl, {
-							label: __( 'Featured businesses only', 'favr-directory' ),
+							label: __( 'Featured listings only', 'favr-directory' ),
 							checked: !! a.featuredOnly,
 							onChange: function ( v ) {
 								set( { featuredOnly: v } );
 							}
 						} ),
 						el( C.RangeControl, {
-							label: __( 'Businesses per page', 'favr-directory' ),
+							label: __( 'Listings per page', 'favr-directory' ),
 							value: a.perPage,
 							min: 1,
 							max: 60,
@@ -172,8 +172,8 @@
 					blockProps,
 					el( C.Placeholder, {
 						icon: 'id-alt',
-						label: __( 'Business Profile', 'favr-directory' ),
-						instructions: __( 'Shows the full profile of the business being viewed: contact details, hours, map, gallery and more.', 'favr-directory' )
+						label: __( 'Listing profile', 'favr-directory' ),
+						instructions: __( 'Shows the whole listing being viewed: contact details, hours, map, gallery and more.', 'favr-directory' )
 					} )
 				);
 			}
@@ -195,8 +195,8 @@
 				useBlockProps(),
 				el( C.Placeholder, {
 					icon: 'edit',
-					label: __( 'My Listing', 'favr-directory' ),
-					instructions: __( 'Logged-in business representatives see a form to update their directory listing here. Everyone else sees a login prompt.', 'favr-directory' )
+					label: __( 'My listing', 'favr-directory' ),
+					instructions: __( 'Logged-in listing managers see a form to update their directory listing here. Everyone else sees a login prompt.', 'favr-directory' )
 				} )
 			);
 		},

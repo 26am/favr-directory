@@ -2,10 +2,10 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "favr-directory/directory",
-	"title": "Business Directory",
+	"title": "Directory",
 	"category": "widgets",
 	"icon": "store",
-	"description": "A searchable, filterable list of member businesses.",
+	"description": "A searchable, filterable list of the directory's listings.",
 	"keywords": [ "directory", "business", "members", "chamber", "listing" ],
 	"textdomain": "favr-directory",
 	"attributes": {

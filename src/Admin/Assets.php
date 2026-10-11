@@ -36,19 +36,20 @@ final class Assets {
 		wp_enqueue_style( 'favr-core-fields', FAVR_DIRECTORY_URL . 'assets/core/fields.css', array(), AssetVersion::of( 'assets/core/fields.css' ) );
 		wp_enqueue_style( 'favr-directory-admin', FAVR_DIRECTORY_URL . 'assets/admin/admin.css', array( 'favr-core-fields' ), AssetVersion::of( 'assets/admin/admin.css' ) );
 
-		$deps = array( 'jquery' );
 		if ( 'post' === $screen->base ) {
 			wp_enqueue_media();
-			$deps[] = 'jquery-ui-sortable';
 		}
-		if ( in_array( $screen->base, array( 'edit-tags', 'term', ID::POST_TYPE . '_page_' . SettingsPage::SLUG ), true ) || str_contains( $hook_suffix, SettingsPage::SLUG ) ) {
+		$deps = self::fieldScriptDependencies( (string) $screen->base, $hook_suffix );
+		if ( in_array( 'wp-color-picker', $deps, true ) ) {
 			wp_enqueue_style( 'wp-color-picker' );
-			$deps[] = 'wp-color-picker';
 		}
 
 		// Handle shared with other Favr plugins: whichever registers first wins, and all copies are
 		// the same favr-core release family.
 		wp_enqueue_script( 'favr-core-fields', FAVR_DIRECTORY_URL . 'assets/core/fields.js', $deps, AssetVersion::of( 'assets/core/fields.js' ), true );
+		// If another Favr plugin registered the handle first, its dependency list is the one in
+		// force and may leave sortable out, so ask for it by name as well.
+		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_localize_script(
 			'favr-core-fields',
 			'favrCoreFields',
@@ -79,5 +80,25 @@ final class Assets {
 				),
 			)
 		);
+	}
+
+	/**
+	 * What the shared field script (assets/core/fields.js) needs loaded before it runs.
+	 *
+	 * Sortable is needed on every screen, not only the edit screen: the script's start-up calls
+	 * jQuery UI's sortable() for galleries and repeaters whether or not the screen has one. Where
+	 * sortable was missing (the list, category, level and settings screens) the script stopped
+	 * with "$(...).sortable is not a function" and the rest of its start-up never ran.
+	 *
+	 * @param string $base        Screen base: "edit", "post", "edit-tags", "term" or a settings page.
+	 * @param string $hook_suffix Current admin page.
+	 * @return list<string>
+	 */
+	public static function fieldScriptDependencies( string $base, string $hook_suffix ): array {
+		$deps = array( 'jquery', 'jquery-ui-sortable' );
+		if ( in_array( $base, array( 'edit-tags', 'term', ID::POST_TYPE . '_page_' . SettingsPage::SLUG ), true ) || str_contains( $hook_suffix, SettingsPage::SLUG ) ) {
+			$deps[] = 'wp-color-picker';
+		}
+		return $deps;
 	}
 }

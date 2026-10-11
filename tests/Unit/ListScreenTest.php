@@ -125,6 +125,29 @@ final class ListScreenTest extends TestCase {
 		$this->assertStringContainsString( ' title="o&#039;neal&amp;sons@example.org"', ListScreen::emailLink( "o'neal&sons@example.org" ) );
 	}
 
+	/**
+	 * Favr Members' Contact column prints the same person the same way (its
+	 * Admin\ListScreen::contactHtml): the e-mail first, it is the link, then the phone, each
+	 * with its small icon.
+	 */
+	public function test_the_contact_column_puts_the_e_mail_first_then_the_phone(): void {
+		Functions\stubs(
+			array(
+				'esc_attr' => static fn( $text ) => htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' ),
+				'esc_html' => static fn( $text ) => htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' ),
+			)
+		);
+
+		$this->assertSame(
+			'<div><span class="dashicons dashicons-email" aria-hidden="true"></span> <a href="mailto:rachel@example.org" title="rachel@example.org">rachel@example.org</a></div>'
+			. '<div><span class="dashicons dashicons-phone" aria-hidden="true"></span> (813) 555-0119</div>',
+			ListScreen::contactHtml( 'rachel@example.org', '(813) 555-0119' )
+		);
+		$this->assertSame( '<div><span class="dashicons dashicons-phone" aria-hidden="true"></span> (813) 555-0119</div>', ListScreen::contactHtml( '', '(813) 555-0119' ) );
+		$this->assertStringNotContainsString( 'dashicons-phone', ListScreen::contactHtml( 'rachel@example.org', '' ) );
+		$this->assertSame( '<span aria-hidden="true">—</span>', ListScreen::contactHtml( '', '' ) );
+	}
+
 	public function test_bulk_messages_say_listing(): void {
 		$counts   = array(
 			'updated'   => 1,

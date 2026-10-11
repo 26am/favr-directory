@@ -151,18 +151,8 @@ final class ListScreen {
 				break;
 
 			case 'favr_contact':
-				$phone = $business->text( 'phone' );
-				$email = $business->text( 'email' );
-				if ( '' !== $phone ) {
-					printf( '<div><span class="dashicons dashicons-phone"></span> %s</div>', esc_html( $phone ) );
-				}
-				if ( '' !== $email ) {
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- emailLink() escapes each part.
-					echo '<div><span class="dashicons dashicons-email"></span> ' . self::emailLink( $email ) . '</div>';
-				}
-				if ( '' === $phone && '' === $email ) {
-					echo '<span aria-hidden="true">—</span>';
-				}
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contactHtml() escapes each part.
+				echo self::contactHtml( $business->text( 'email' ), $business->text( 'phone' ) );
 				break;
 
 			case 'favr_city':
@@ -181,6 +171,25 @@ final class ListScreen {
 				);
 				break;
 		}
+	}
+
+	/**
+	 * The Contact cell: the e-mail first (it is the link), then the phone, each after its small
+	 * icon; a dash when the listing has neither. Favr Members prints its Contact column the same
+	 * way, so a person who is in both lists reads the same in both.
+	 *
+	 * @param string $email The listing's e-mail address.
+	 * @param string $phone The listing's phone number.
+	 */
+	public static function contactHtml( string $email, string $phone ): string {
+		$html = '';
+		if ( '' !== $email ) {
+			$html .= '<div><span class="dashicons dashicons-email" aria-hidden="true"></span> ' . self::emailLink( $email ) . '</div>';
+		}
+		if ( '' !== $phone ) {
+			$html .= sprintf( '<div><span class="dashicons dashicons-phone" aria-hidden="true"></span> %s</div>', esc_html( $phone ) );
+		}
+		return '' !== $html ? $html : '<span aria-hidden="true">—</span>';
 	}
 
 	/**

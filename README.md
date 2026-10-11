@@ -14,17 +14,20 @@ WordPress admin, and visitors get a fast, searchable directory with rich busines
 
 **For directory staff (wp-admin → Directory)**
 
-- One tabbed **Business Profile** panel: Overview, Contact, Location, Hours, Social, Photos & Video,
-  Membership, Deals & Extras. Fill in a little or a lot; empty sections never show on the site.
+- Staff screens say **listing** whatever the directory lists (businesses, members, attorneys…):
+  Directory → All listings, Add listing, Categories. The public site keeps the directory's own
+  noun (Settings → "Call listings").
+- One tabbed profile panel: Overview, Contact, Location, Hours, Social, Photos & video,
+  Membership, Deals & extras. Fill in a little or a lot; empty sections never show on the site.
 - Purpose-built inputs: logo picker, drag-to-reorder photo gallery, weekly hours grid ("copy Monday
   to all weekdays", overnight and 24-hour days), highlight chips, link repeater, conditional
   fields, and URL auto-fix (`example.com` → `https://example.com`).
 - **Listing health** meter with one-click "Add logo / Add hours…" shortcuts.
 - List table with logos, contact details, city, a one-click ⭐ featured toggle, a completeness bar,
   and category / level / featured filters.
-- **Business Categories** (hierarchical) and **Membership Levels** (display order + badge color;
+- **Directory categories** (hierarchical) and **Membership levels** (display order + badge color;
   Platinum/Gold/Silver/Member seeded on install).
-- **Import / Export CSV** with a test-run mode. Existing businesses are matched by id, slug or
+- **Import & export** (CSV) with a test-run mode. Existing listings are matched by id, slug or
   name, and only the columns in the file are changed.
 - A **Directory Manager** role that can manage listings without touching the rest of the site.
 - Staff-only fields (member ID, renewal date, notes) that are never shown publicly or over REST.
@@ -62,8 +65,8 @@ WordPress admin, and visitors get a fast, searchable directory with rich busines
   a reviewer was looking.
 - **Claim this listing:** logged-in visitors can claim a listing. Staff approve in Approvals, and the
   person becomes a listing manager, or a representative of the linked member with Favr Members.
-- Staff see and manage **Listing managers** on the business screen (add by email; new people get
-  an invitation), plus a log of recent changes by representatives.
+- Staff see and manage **Listing managers** on the listing's edit screen (add by email; new people
+  get an invitation), plus a log of recent changes by representatives.
 
 ## Displaying the directory
 
@@ -106,7 +109,9 @@ shortcode, all rendered by the same code. See [ADR 0002](docs/adr/0002-page-buil
 - **Styling:** everything is scoped under `.favr-dir` / `.favr-profile` and driven by CSS custom
   properties (`--favr-accent`, `--favr-radius`, …). The accent color is also a setting.
 - **Fields:** add, change or remove fields with the `favr_directory_fields` filter. They then appear
-  in the admin, REST, CSV and `[favr_business_field]` automatically.
+  in the admin, REST, CSV and `[favr_business_field]` automatically. A field's `label` and
+  `description` are shown to everyone (staff, representatives on the front-end form, REST); give it
+  an `admin_label` / `admin_description` when the staff edit screen should word it differently.
 
 ```php
 add_filter( 'favr_directory_fields', function ( array $fields ) {

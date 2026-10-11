@@ -206,7 +206,7 @@ final class ChangeQueue {
 			esc_html(
 				sprintf(
 					/* translators: %d: number of fields. */
-					_n( 'The business suggested %d change to this listing.', 'The business suggested %d changes to this listing.', count( $pending ), 'favr-directory' ),
+					_n( 'A representative suggested %d change to this listing.', 'A representative suggested %d changes to this listing.', count( $pending ), 'favr-directory' ),
 					count( $pending )
 				)
 			),

@@ -1,6 +1,6 @@
 <?php
 /**
- * Directory → Import / Export.
+ * Directory → Import & export.
  *
  * @package FavrDirectory
  */
@@ -31,8 +31,8 @@ final class ImportExportPage {
 	public function menu(): void {
 		add_submenu_page(
 			'edit.php?post_type=' . ID::POST_TYPE,
-			__( 'Import & Export', 'favr-directory' ),
-			__( 'Import / Export', 'favr-directory' ),
+			__( 'Import & export', 'favr-directory' ),
+			__( 'Import & export', 'favr-directory' ),
 			ID::CAP_SETTINGS,
 			self::SLUG,
 			array( $this, 'render' )
@@ -66,7 +66,7 @@ final class ImportExportPage {
 	public function import(): void {
 		check_admin_referer( 'favr_import' );
 		if ( ! current_user_can( ID::CAP_SETTINGS ) ) {
-			wp_die( esc_html__( 'You are not allowed to import businesses.', 'favr-directory' ), 403 );
+			wp_die( esc_html__( 'You are not allowed to import listings.', 'favr-directory' ), 403 );
 		}
 
 		$file = $_FILES['favr_csv'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- validated below.
@@ -115,7 +115,7 @@ final class ImportExportPage {
 		$total = (int) ( $count->publish ?? 0 ) + (int) ( $count->draft ?? 0 ) + (int) ( $count->pending ?? 0 ) + (int) ( $count->private ?? 0 );
 		?>
 		<div class="wrap favr-settings">
-			<h1><?php esc_html_e( 'Import & Export', 'favr-directory' ); ?></h1>
+			<h1><?php esc_html_e( 'Import & export', 'favr-directory' ); ?></h1>
 
 			<?php if ( is_array( $report ) ) : ?>
 				<?php $this->renderReport( $report ); ?>
@@ -124,8 +124,8 @@ final class ImportExportPage {
 			<div class="favr-settings__layout">
 				<div class="favr-settings__form">
 					<div class="favr-card">
-						<h2><span class="dashicons dashicons-upload"></span> <?php esc_html_e( 'Import businesses from a spreadsheet', 'favr-directory' ); ?></h2>
-						<p><?php esc_html_e( 'Upload a CSV file. Existing businesses are matched by id, slug or exact name and updated; everything else is created. Only the columns in your file are changed.', 'favr-directory' ); ?></p>
+						<h2><span class="dashicons dashicons-upload"></span> <?php esc_html_e( 'Import listings from a spreadsheet', 'favr-directory' ); ?></h2>
+						<p><?php esc_html_e( 'Upload a CSV file. Existing listings are matched by id, slug or exact name and updated; everything else is created. Only the columns in your file are changed.', 'favr-directory' ); ?></p>
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data">
 							<input type="hidden" name="action" value="favr_import">
 							<?php wp_nonce_field( 'favr_import' ); ?>
@@ -140,8 +140,8 @@ final class ImportExportPage {
 						<h2><span class="dashicons dashicons-download"></span> <?php esc_html_e( 'Export the directory', 'favr-directory' ); ?></h2>
 						<p>
 							<?php
-							/* translators: %d: number of businesses. */
-							echo esc_html( sprintf( _n( 'Download all %d business as a CSV file you can open in Excel or Google Sheets.', 'Download all %d businesses as a CSV file you can open in Excel or Google Sheets.', $total, 'favr-directory' ), $total ) );
+							/* translators: %d: number of listings. */
+							echo esc_html( sprintf( _n( 'Download %d listing as a CSV file you can open in Excel or Google Sheets.', 'Download all %d listings as a CSV file you can open in Excel or Google Sheets.', $total, 'favr-directory' ), $total ) );
 							?>
 						</p>
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -158,7 +158,7 @@ final class ImportExportPage {
 						<h2><?php esc_html_e( 'Spreadsheet format', 'favr-directory' ); ?></h2>
 						<p><?php esc_html_e( 'Tip: export first and use the file as your template.', 'favr-directory' ); ?></p>
 						<ul class="favr-help">
-							<li><code>name</code> — <?php esc_html_e( 'required for new businesses', 'favr-directory' ); ?></li>
+							<li><code>name</code> — <?php esc_html_e( 'required for new listings', 'favr-directory' ); ?></li>
 							<li><code>categories</code> — <code>Food &gt; Bakeries|Retail</code></li>
 							<li><code>level</code> — <code>Gold</code></li>
 							<li><code>hours</code> — <code>mon=09:00-17:00;sat=closed;sun=24h</code></li>
@@ -190,7 +190,7 @@ final class ImportExportPage {
 			esc_html_e( 'Test run complete — nothing was saved.', 'favr-directory' );
 			echo '</strong> ';
 			/* translators: 1: would-create count, 2: would-update count, 3: skipped count. */
-			echo esc_html( sprintf( __( 'Would create %1$d, update %2$d, skip %3$d. Untick “Test run” and import again to save.', 'favr-directory' ), $created, $updated, $skipped ) );
+			echo esc_html( sprintf( __( 'Would create %1$d, update %2$d, skip %3$d. Uncheck “Test run” and import again to save.', 'favr-directory' ), $created, $updated, $skipped ) );
 		} elseif ( isset( $report['created'] ) ) {
 			esc_html_e( 'Import complete.', 'favr-directory' );
 			echo '</strong> ';

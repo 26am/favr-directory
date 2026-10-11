@@ -1,6 +1,6 @@
 <?php
 /**
- * "Listing managers" box on the business edit screen.
+ * "Listing managers" box on the listing edit screen.
  *
  * @package FavrDirectory
  */
@@ -83,7 +83,7 @@ final class ManagersBox {
 		printf(
 			'<p><label for="favr-manager-add">%1$s</label><input type="text" id="favr-manager-add" name="favr_manager_add" class="widefat" placeholder="%2$s" autocomplete="off"></p><p class="description">%3$s</p>',
 			esc_html__( 'Add by email or username', 'favr-directory' ),
-			esc_attr__( 'owner@business.com', 'favr-directory' ),
+			esc_attr__( 'name@example.com', 'favr-directory' ),
 			esc_html__( 'New email addresses get an account and an invitation to set a password.', 'favr-directory' )
 		);
 

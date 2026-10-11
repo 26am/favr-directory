@@ -38,21 +38,29 @@ final class Registrar {
 			ID::TAX_CATEGORY,
 			ID::POST_TYPE,
 			array(
+				// Staff words (sentence case). The public pages print the category's own name, never these.
 				'labels'            => array(
-					'name'              => __( 'Business Categories', 'favr-directory' ),
-					'singular_name'     => __( 'Business Category', 'favr-directory' ),
-					'menu_name'         => __( 'Categories', 'favr-directory' ),
-					'search_items'      => __( 'Search Categories', 'favr-directory' ),
-					'all_items'         => __( 'All Categories', 'favr-directory' ),
-					'parent_item'       => __( 'Parent Category', 'favr-directory' ),
-					'parent_item_colon' => __( 'Parent Category:', 'favr-directory' ),
-					'edit_item'         => __( 'Edit Category', 'favr-directory' ),
-					'view_item'         => __( 'View Category', 'favr-directory' ),
-					'update_item'       => __( 'Update Category', 'favr-directory' ),
-					'add_new_item'      => __( 'Add New Category', 'favr-directory' ),
-					'new_item_name'     => __( 'New Category Name', 'favr-directory' ),
-					'not_found'         => __( 'No categories found.', 'favr-directory' ),
-					'back_to_items'     => __( '← Back to Categories', 'favr-directory' ),
+					'name'                  => __( 'Directory categories', 'favr-directory' ),
+					'singular_name'         => __( 'Category', 'favr-directory' ),
+					'menu_name'             => __( 'Categories', 'favr-directory' ),
+					'search_items'          => __( 'Search categories', 'favr-directory' ),
+					'all_items'             => __( 'All categories', 'favr-directory' ),
+					'parent_item'           => __( 'Parent category', 'favr-directory' ),
+					'parent_item_colon'     => __( 'Parent category:', 'favr-directory' ),
+					'edit_item'             => __( 'Edit category', 'favr-directory' ),
+					'view_item'             => __( 'View category', 'favr-directory' ),
+					'update_item'           => __( 'Update category', 'favr-directory' ),
+					'add_new_item'          => __( 'Add category', 'favr-directory' ),
+					'new_item_name'         => __( 'New category name', 'favr-directory' ),
+					'not_found'             => __( 'No categories found.', 'favr-directory' ),
+					'no_terms'              => __( 'No categories', 'favr-directory' ),
+					'filter_by_item'        => __( 'Filter by category', 'favr-directory' ),
+					'items_list_navigation' => __( 'Categories list navigation', 'favr-directory' ),
+					'items_list'            => __( 'Categories list', 'favr-directory' ),
+					'most_used'             => __( 'Most used', 'favr-directory' ),
+					'back_to_items'         => __( '← All categories', 'favr-directory' ),
+					'item_link'             => __( 'Category link', 'favr-directory' ),
+					'item_link_description' => __( 'A link to a category.', 'favr-directory' ),
 				),
 				'hierarchical'      => true,
 				'public'            => true,
@@ -78,16 +86,26 @@ final class Registrar {
 			ID::POST_TYPE,
 			array(
 				'labels'             => array(
-					'name'          => __( 'Membership Levels', 'favr-directory' ),
-					'singular_name' => __( 'Membership Level', 'favr-directory' ),
-					'menu_name'     => __( 'Membership Levels', 'favr-directory' ),
-					'all_items'     => __( 'All Levels', 'favr-directory' ),
-					'edit_item'     => __( 'Edit Level', 'favr-directory' ),
-					'update_item'   => __( 'Update Level', 'favr-directory' ),
-					'add_new_item'  => __( 'Add New Level', 'favr-directory' ),
-					'new_item_name' => __( 'New Level Name', 'favr-directory' ),
-					'not_found'     => __( 'No levels found.', 'favr-directory' ),
-					'back_to_items' => __( '← Back to Levels', 'favr-directory' ),
+					'name'                  => __( 'Membership levels', 'favr-directory' ),
+					'singular_name'         => __( 'Membership level', 'favr-directory' ),
+					'menu_name'             => __( 'Membership levels', 'favr-directory' ),
+					'search_items'          => __( 'Search levels', 'favr-directory' ),
+					'all_items'             => __( 'All levels', 'favr-directory' ),
+					// Hierarchical, so WordPress would otherwise say "Parent Category" and "No categories".
+					'parent_item'           => __( 'Parent level', 'favr-directory' ),
+					'parent_item_colon'     => __( 'Parent level:', 'favr-directory' ),
+					'edit_item'             => __( 'Edit level', 'favr-directory' ),
+					'view_item'             => __( 'View level', 'favr-directory' ),
+					'update_item'           => __( 'Update level', 'favr-directory' ),
+					'add_new_item'          => __( 'Add level', 'favr-directory' ),
+					'new_item_name'         => __( 'New level name', 'favr-directory' ),
+					'not_found'             => __( 'No levels found.', 'favr-directory' ),
+					'no_terms'              => __( 'No levels', 'favr-directory' ),
+					'filter_by_item'        => __( 'Filter by level', 'favr-directory' ),
+					'items_list_navigation' => __( 'Levels list navigation', 'favr-directory' ),
+					'items_list'            => __( 'Levels list', 'favr-directory' ),
+					'most_used'             => __( 'Most used', 'favr-directory' ),
+					'back_to_items'         => __( '← All levels', 'favr-directory' ),
 				),
 				'hierarchical'       => true,
 				'public'             => false,
@@ -108,9 +126,8 @@ final class Registrar {
 		);
 	}
 
-	/** The business post type. */
 	/**
-	 * Capitalised noun for labels.
+	 * Capitalized noun for the public labels.
 	 *
 	 * @param bool $plural Plural.
 	 */
@@ -119,33 +136,50 @@ final class Registrar {
 		return mb_strtoupper( mb_substr( $noun, 0, 1 ) ) . mb_substr( $noun, 1 );
 	}
 
-	/** Register the business post type. */
+	/** Register the listing post type. */
 	public function registerPostType(): void {
 		register_post_type(
 			ID::POST_TYPE,
 			array(
 				'labels'          => array(
-					// Public-facing names follow the directory's nouns ("Members" for a bar association).
-					'name'                  => self::ucNoun( true ),
-					'singular_name'         => self::ucNoun( false ),
-					'menu_name'             => __( 'Directory', 'favr-directory' ),
-					'all_items'             => __( 'All Businesses', 'favr-directory' ),
-					'add_new'               => __( 'Add Business', 'favr-directory' ),
-					'add_new_item'          => __( 'Add New Business', 'favr-directory' ),
-					'edit_item'             => __( 'Edit Business', 'favr-directory' ),
-					'new_item'              => __( 'New Business', 'favr-directory' ),
-					'view_item'             => __( 'View Business', 'favr-directory' ),
-					'view_items'            => __( 'View Directory', 'favr-directory' ),
-					'search_items'          => __( 'Search Businesses', 'favr-directory' ),
-					'not_found'             => __( 'No businesses found.', 'favr-directory' ),
-					'not_found_in_trash'    => __( 'No businesses found in Trash.', 'favr-directory' ),
-					'featured_image'        => __( 'Cover photo', 'favr-directory' ),
-					'set_featured_image'    => __( 'Set cover photo', 'favr-directory' ),
-					'remove_featured_image' => __( 'Remove cover photo', 'favr-directory' ),
-					'use_featured_image'    => __( 'Use as cover photo', 'favr-directory' ),
-					'archives'              => __( 'Business Directory', 'favr-directory' ),
-					'item_published'        => __( 'Business published.', 'favr-directory' ),
-					'item_updated'          => __( 'Business updated.', 'favr-directory' ),
+					// Public-facing names follow the directory's nouns ("Members" for a bar association):
+					// REST, nav menus, SEO plugins and page builders read them.
+					'name'                     => self::ucNoun( true ),
+					'singular_name'            => self::ucNoun( false ),
+					'archives'                 => __( 'Business Directory', 'favr-directory' ),
+					// Staff words: always "listing", whatever the directory lists, in sentence case.
+					// The list screen's heading is set in Admin\ListScreen::titleScreen().
+					'menu_name'                => __( 'Directory', 'favr-directory' ),
+					// Not "Listing" alone: the toolbar's New menu has no "Directory" above it.
+					'name_admin_bar'           => __( 'Directory listing', 'favr-directory' ),
+					'all_items'                => __( 'All listings', 'favr-directory' ),
+					'add_new'                  => __( 'Add listing', 'favr-directory' ),
+					'add_new_item'             => __( 'Add listing', 'favr-directory' ),
+					'edit_item'                => __( 'Edit listing', 'favr-directory' ),
+					'new_item'                 => __( 'New listing', 'favr-directory' ),
+					'view_item'                => __( 'View listing', 'favr-directory' ),
+					'view_items'               => __( 'View directory', 'favr-directory' ),
+					'search_items'             => __( 'Search listings', 'favr-directory' ),
+					'not_found'                => __( 'No listings found.', 'favr-directory' ),
+					'not_found_in_trash'       => __( 'No listings found in Trash.', 'favr-directory' ),
+					'featured_image'           => __( 'Cover photo', 'favr-directory' ),
+					'set_featured_image'       => __( 'Set cover photo', 'favr-directory' ),
+					'remove_featured_image'    => __( 'Remove cover photo', 'favr-directory' ),
+					'use_featured_image'       => __( 'Use as cover photo', 'favr-directory' ),
+					'attributes'               => __( 'Listing attributes', 'favr-directory' ),
+					'insert_into_item'         => __( 'Insert into listing', 'favr-directory' ),
+					'uploaded_to_this_item'    => __( 'Uploaded to this listing', 'favr-directory' ),
+					'filter_items_list'        => __( 'Filter listings list', 'favr-directory' ),
+					'items_list_navigation'    => __( 'Listings list navigation', 'favr-directory' ),
+					'items_list'               => __( 'Listings list', 'favr-directory' ),
+					'item_published'           => __( 'Listing published.', 'favr-directory' ),
+					'item_published_privately' => __( 'Listing published privately.', 'favr-directory' ),
+					'item_reverted_to_draft'   => __( 'Listing reverted to draft.', 'favr-directory' ),
+					'item_trashed'             => __( 'Listing trashed.', 'favr-directory' ),
+					'item_scheduled'           => __( 'Listing scheduled.', 'favr-directory' ),
+					'item_updated'             => __( 'Listing updated.', 'favr-directory' ),
+					'item_link'                => __( 'Listing link', 'favr-directory' ),
+					'item_link_description'    => __( 'A link to a listing.', 'favr-directory' ),
 				),
 				'public'          => true,
 				'show_in_rest'    => true,

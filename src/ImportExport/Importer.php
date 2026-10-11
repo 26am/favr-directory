@@ -102,7 +102,7 @@ final class Importer {
 		if ( ! $existing && '' === $name ) {
 			++$this->report['skipped'];
 			/* translators: %d: line number. */
-			$this->report['errors'][] = sprintf( __( 'Line %d: skipped — no business name.', 'favr-directory' ), $line );
+			$this->report['errors'][] = sprintf( __( 'Line %d: skipped — no name.', 'favr-directory' ), $line );
 			return;
 		}
 

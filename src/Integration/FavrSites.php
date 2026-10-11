@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace FavrDirectory\Integration;
 
 use FavrDirectory\Schema\Identifiers as ID;
-use FavrDirectory\Support\Settings;
 
 /**
  * Contributes plain data to the Favr dashboard; inert when Favr Sites isn't installed.
@@ -77,7 +76,9 @@ final class FavrSites {
 			'priority'   => 20,
 			'stats'      => $count ? array(
 				array(
-					'label' => Settings::noun( true ),
+					// "listings", not the directory's public noun: on a people directory that is
+					// "members", the word the Members card counts with.
+					'label' => _n( 'listing', 'listings', $count, 'favr-directory' ),
 					'value' => number_format_i18n( $count ),
 					'url'   => $list,
 				),

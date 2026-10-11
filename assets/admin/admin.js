@@ -1,6 +1,6 @@
 /* Favr Directory — admin extras. The field UI itself (tabs, media, hours, repeaters, conditions)
    comes from favr-core (assets/core/fields.js); this adds the listing health meter, "go to field"
-   shortcuts, the featured star on the list screen and colour pickers. */
+   shortcuts, the featured star on the list screen and color pickers. */
 ( function ( $ ) {
 	'use strict';
 

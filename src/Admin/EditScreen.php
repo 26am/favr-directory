@@ -1,6 +1,6 @@
 <?php
 /**
- * The business add/edit screen.
+ * The listing add/edit screen.
  *
  * @package FavrDirectory
  */
@@ -17,10 +17,14 @@ use FavrDirectory\Schema\Identifiers as ID;
 use FavrDirectory\Support\Completeness;
 
 /**
- * Businesses are structured records, not articles, so the edit screen uses the classic form
- * with one tabbed "Business Profile" panel directly under the title (the description editor
- * lives in its first tab) plus a slim sidebar. Opt back into the block editor with the
+ * Listings are structured records, not articles, so the edit screen uses the classic form
+ * with one tabbed profile panel directly under the title (the description editor lives in its
+ * first tab) plus a slim sidebar. Opt back into the block editor with the
  * `favr_directory_use_block_editor` filter.
+ *
+ * Words on this screen say "listing" whatever the directory lists: fields and tabs are shown
+ * through FieldRegistry::forStaff(), which leaves the public wording (the front-end form, REST,
+ * page builders) alone.
  */
 final class EditScreen {
 
@@ -84,7 +88,7 @@ final class EditScreen {
 	 * @param \WP_Post $post Post.
 	 */
 	public function titlePlaceholder( string $text, \WP_Post $post ): string {
-		return ID::POST_TYPE === $post->post_type ? __( 'Business name', 'favr-directory' ) : $text;
+		return ID::POST_TYPE === $post->post_type ? __( 'Listing name', 'favr-directory' ) : $text;
 	}
 
 	/**
@@ -102,7 +106,7 @@ final class EditScreen {
 		add_meta_box( 'favr-level', __( 'Membership level', 'favr-directory' ), array( $this, 'renderLevel' ), ID::POST_TYPE, 'side', 'default' );
 
 		if ( $this->useBlockEditor( false, ID::POST_TYPE ) ) {
-			add_meta_box( 'favr-profile', __( 'Business Profile', 'favr-directory' ), array( $this, 'renderPanel' ), ID::POST_TYPE, 'normal', 'high' );
+			add_meta_box( 'favr-profile', __( 'Listing profile', 'favr-directory' ), array( $this, 'renderPanel' ), ID::POST_TYPE, 'normal', 'high' );
 		}
 	}
 
@@ -118,11 +122,11 @@ final class EditScreen {
 		$block_editor = $this->useBlockEditor( false, ID::POST_TYPE );
 		wp_nonce_field( ID::NONCE_META, '_favr_nonce' );
 
-		$tabs     = FieldRegistry::tabs();
+		$tabs     = array_map( array( FieldRegistry::class, 'forStaff' ), FieldRegistry::tabs() );
 		$business = new Business( $post );
 
 		echo '<div class="favr-panel" id="favr-panel">';
-		echo '<nav class="favr-tabs" role="tablist" aria-label="' . esc_attr__( 'Business profile sections', 'favr-directory' ) . '">';
+		echo '<nav class="favr-tabs" role="tablist" aria-label="' . esc_attr__( 'Listing profile sections', 'favr-directory' ) . '">';
 		$first = true;
 		foreach ( $tabs as $tab_id => $tab ) {
 			printf(
@@ -152,6 +156,7 @@ final class EditScreen {
 			}
 
 			foreach ( FieldRegistry::forTab( (string) $tab_id ) as $field ) {
+				$field = FieldRegistry::forStaff( $field );
 				if ( self::isLocked( (string) $field['id'], $post ) ) {
 					$this->renderLocked( $field, $business->text( (string) $field['id'] ), $post );
 					continue;
@@ -180,7 +185,7 @@ final class EditScreen {
 	 */
 	private function renderDescriptionEditor( \WP_Post $post ): void {
 		echo '<div class="favr-field favr-w-full favr-field--editor">';
-		printf( '<label class="favr-field__label" for="content">%s</label>', esc_html__( 'About this business', 'favr-directory' ) );
+		printf( '<label class="favr-field__label" for="content">%s</label>', esc_html__( 'About this listing', 'favr-directory' ) );
 		wp_editor(
 			$post->post_content,
 			'content',
@@ -390,7 +395,7 @@ final class EditScreen {
 		}
 
 		/**
-		 * After a business profile is saved from the edit screen.
+		 * After a listing's profile is saved from the edit screen.
 		 *
 		 * @param int      $post_id Post id.
 		 * @param \WP_Post $post    Post.
@@ -430,13 +435,13 @@ final class EditScreen {
 
 		$messages[ ID::POST_TYPE ] = array(
 			0  => '',
-			1  => __( 'Business updated.', 'favr-directory' ) . $link,
-			4  => __( 'Business updated.', 'favr-directory' ),
-			6  => __( 'Business published.', 'favr-directory' ) . $link,
-			7  => __( 'Business saved.', 'favr-directory' ),
-			8  => __( 'Business submitted.', 'favr-directory' ),
-			9  => __( 'Business scheduled.', 'favr-directory' ),
-			10 => __( 'Business draft updated.', 'favr-directory' ),
+			1  => __( 'Listing updated.', 'favr-directory' ) . $link,
+			4  => __( 'Listing updated.', 'favr-directory' ),
+			6  => __( 'Listing published.', 'favr-directory' ) . $link,
+			7  => __( 'Listing saved.', 'favr-directory' ),
+			8  => __( 'Listing submitted.', 'favr-directory' ),
+			9  => __( 'Listing scheduled.', 'favr-directory' ),
+			10 => __( 'Listing draft updated.', 'favr-directory' ),
 		);
 		return $messages;
 	}
@@ -448,13 +453,13 @@ final class EditScreen {
 	 */
 	public function missingLabels(): array {
 		$labels = array(
-			'title'       => __( 'Business name', 'favr-directory' ),
+			'title'       => __( 'Listing name', 'favr-directory' ),
 			'description' => __( 'Description', 'favr-directory' ),
 			'category'    => __( 'Category', 'favr-directory' ),
 			'cover'       => __( 'Cover photo', 'favr-directory' ),
 		);
 		foreach ( FieldRegistry::all() as $id => $field ) {
-			$labels[ $id ] = (string) $field['label'];
+			$labels[ $id ] = (string) FieldRegistry::forStaff( $field )['label'];
 		}
 		return $labels;
 	}

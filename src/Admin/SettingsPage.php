@@ -32,7 +32,7 @@ final class SettingsPage {
 	public function menu(): void {
 		add_submenu_page(
 			'edit.php?post_type=' . ID::POST_TYPE,
-			__( 'Directory Settings', 'favr-directory' ),
+			__( 'Directory settings', 'favr-directory' ),
 			__( 'Settings', 'favr-directory' ),
 			ID::CAP_SETTINGS,
 			self::SLUG,
@@ -143,7 +143,7 @@ final class SettingsPage {
 		$archive = get_post_type_archive_link( ID::POST_TYPE );
 		?>
 		<div class="wrap favr-settings">
-			<h1><?php esc_html_e( 'Directory Settings', 'favr-directory' ); ?></h1>
+			<h1><?php esc_html_e( 'Directory settings', 'favr-directory' ); ?></h1>
 
 			<div class="favr-settings__layout">
 				<form method="post" action="options.php" class="favr-settings__form">
@@ -188,7 +188,7 @@ final class SettingsPage {
 								<td><code>/<?php echo esc_html( Registrar::directorySlug() ); ?>/</code><input type="text" id="favr-cat-slug" class="regular-text code favr-slug-input" name="<?php echo esc_attr( $option ); ?>[category_slug]" value="<?php echo esc_attr( (string) $s['category_slug'] ); ?>"><code>/restaurants/</code></td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="favr-per-page"><?php esc_html_e( 'Businesses per page', 'favr-directory' ); ?></label></th>
+								<th scope="row"><label for="favr-per-page"><?php esc_html_e( 'Listings per page', 'favr-directory' ); ?></label></th>
 								<td><input type="number" id="favr-per-page" min="1" max="100" class="small-text" name="<?php echo esc_attr( $option ); ?>[per_page]" value="<?php echo esc_attr( (string) $s['per_page'] ); ?>"></td>
 							</tr>
 							<tr>
@@ -211,7 +211,7 @@ final class SettingsPage {
 					</div>
 
 					<div class="favr-card">
-						<h2><?php esc_html_e( 'Business pages', 'favr-directory' ); ?></h2>
+						<h2><?php esc_html_e( 'Listing pages', 'favr-directory' ); ?></h2>
 						<table class="form-table" role="presentation">
 							<tr>
 								<th scope="row"><?php esc_html_e( 'Show these sections', 'favr-directory' ); ?></th>
@@ -221,7 +221,7 @@ final class SettingsPage {
 											<label><input type="checkbox" name="<?php echo esc_attr( $option ); ?>[sections][]" value="<?php echo esc_attr( $key ); ?>" <?php checked( Settings::sectionEnabled( $key ) ); ?>> <?php echo esc_html( $label ); ?></label>
 										<?php endforeach; ?>
 									</fieldset>
-									<p class="description"><?php esc_html_e( 'Sections only appear when a business has filled them in.', 'favr-directory' ); ?></p>
+									<p class="description"><?php esc_html_e( 'A section only appears on a listing that has something to show in it.', 'favr-directory' ); ?></p>
 								</td>
 							</tr>
 							<tr>
@@ -255,7 +255,7 @@ final class SettingsPage {
 								</td>
 							</tr>
 						</table>
-						<p class="description"><?php esc_html_e( 'Business pages include LocalBusiness structured data, directory pages an ItemList, and all pages breadcrumbs. With Yoast SEO or Rank Math active, this data is merged into their output instead of being printed separately.', 'favr-directory' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Listing pages include LocalBusiness structured data (Person on a people directory), directory pages an ItemList, and all pages breadcrumbs. With Yoast SEO or Rank Math active, this data is merged into their output instead of being printed separately.', 'favr-directory' ); ?></p>
 					</div>
 
 					<div class="favr-card">
@@ -325,7 +325,7 @@ final class SettingsPage {
 						<table class="form-table" role="presentation">
 							<tr>
 								<th scope="row"><?php esc_html_e( 'On uninstall', 'favr-directory' ); ?></th>
-								<td><label><input type="checkbox" name="<?php echo esc_attr( $option ); ?>[delete_data]" value="1" <?php checked( $s['delete_data'], '1' ); ?>> <?php esc_html_e( 'Permanently delete all businesses, categories and settings when the plugin is deleted', 'favr-directory' ); ?></label></td>
+								<td><label><input type="checkbox" name="<?php echo esc_attr( $option ); ?>[delete_data]" value="1" <?php checked( $s['delete_data'], '1' ); ?>> <?php esc_html_e( 'Permanently delete all listings, categories and settings when the plugin is deleted', 'favr-directory' ); ?></label></td>
 							</tr>
 						</table>
 					</div>

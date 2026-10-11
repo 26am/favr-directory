@@ -25,7 +25,7 @@ Favr Directory lets chamber and association staff manage member businesses from 
 == Installation ==
 
 1. Upload the plugin and activate it.
-2. Go to Directory → Add Business.
+2. Go to Directory → Add listing.
 3. Visit /directory/ on your site, or add the Business Directory block to any page.
 
 == Changelog ==

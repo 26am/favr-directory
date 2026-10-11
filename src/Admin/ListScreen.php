@@ -1,6 +1,6 @@
 <?php
 /**
- * The "All Businesses" list table.
+ * The "All listings" list table.
  *
  * @package FavrDirectory
  */
@@ -14,7 +14,8 @@ use FavrDirectory\Schema\Identifiers as ID;
 
 /**
  * Adds scannable columns (logo, contact, city, featured star, completeness), filters and a
- * one-click featured toggle to the native list table.
+ * one-click featured toggle to the native list table, and gives the screen the Directory's own
+ * words: the heading "Directory" and messages about listings.
  */
 final class ListScreen {
 
@@ -27,6 +28,51 @@ final class ListScreen {
 		add_action( 'pre_get_posts', array( $this, 'applyFilters' ) );
 		add_filter( 'post_row_actions', array( $this, 'rowActions' ), 10, 2 );
 		add_action( 'wp_ajax_favr_toggle_featured', array( $this, 'ajaxToggleFeatured' ) );
+		add_action( 'load-edit.php', array( $this, 'titleScreen' ) );
+		add_filter( 'bulk_post_updated_messages', array( $this, 'bulkMessages' ), 10, 2 );
+	}
+
+	/**
+	 * Head the list screen "Directory", like its menu.
+	 *
+	 * WordPress prints the post type's `name` label as this screen's heading and browser title
+	 * and offers no filter for either. That label is the directory's public noun ("Members" for
+	 * a bar association, the same word as the Members menu), and REST, nav menus, SEO plugins
+	 * and page builders read it too, so it must not change where it is registered. This runs
+	 * once the request is known to be the list screen and renames this request's copy only.
+	 */
+	public function titleScreen(): void {
+		$screen = get_current_screen();
+		if ( ! $screen || 'edit' !== $screen->base || ID::POST_TYPE !== $screen->post_type ) {
+			return;
+		}
+		$type = get_post_type_object( ID::POST_TYPE );
+		if ( $type ) {
+			$type->labels->name = __( 'Directory', 'favr-directory' );
+		}
+	}
+
+	/**
+	 * "2 listings moved to the Trash." instead of WordPress's "2 posts…".
+	 *
+	 * @param array<string, array<string, string>> $messages Messages by post type.
+	 * @param array<string, int>                   $counts   Items affected, by action.
+	 * @return array<string, array<string, string>>
+	 */
+	public function bulkMessages( array $messages, array $counts ): array {
+		$messages[ ID::POST_TYPE ] = array(
+			/* translators: %s: number of listings. */
+			'updated'   => _n( '%s listing updated.', '%s listings updated.', (int) ( $counts['updated'] ?? 0 ), 'favr-directory' ),
+			/* translators: %s: number of listings. */
+			'locked'    => _n( '%s listing not updated, somebody is editing it.', '%s listings not updated, somebody is editing them.', (int) ( $counts['locked'] ?? 0 ), 'favr-directory' ),
+			/* translators: %s: number of listings. */
+			'deleted'   => _n( '%s listing permanently deleted.', '%s listings permanently deleted.', (int) ( $counts['deleted'] ?? 0 ), 'favr-directory' ),
+			/* translators: %s: number of listings. */
+			'trashed'   => _n( '%s listing moved to the Trash.', '%s listings moved to the Trash.', (int) ( $counts['trashed'] ?? 0 ), 'favr-directory' ),
+			/* translators: %s: number of listings. */
+			'untrashed' => _n( '%s listing restored from the Trash.', '%s listings restored from the Trash.', (int) ( $counts['untrashed'] ?? 0 ), 'favr-directory' ),
+		);
+		return $messages;
 	}
 
 	/**
@@ -40,7 +86,7 @@ final class ListScreen {
 		foreach ( $columns as $key => $label ) {
 			if ( 'title' === $key ) {
 				$out['favr_logo']     = '<span class="screen-reader-text">' . esc_html__( 'Logo', 'favr-directory' ) . '</span>';
-				$out[ $key ]          = __( 'Business', 'favr-directory' );
+				$out[ $key ]          = __( 'Listing', 'favr-directory' );
 				$out['favr_featured'] = '<span class="dashicons dashicons-star-filled" title="' . esc_attr__( 'Featured', 'favr-directory' ) . '"></span><span class="screen-reader-text">' . esc_html__( 'Featured', 'favr-directory' ) . '</span>';
 				continue;
 			}
@@ -159,8 +205,8 @@ final class ListScreen {
 			$selected = isset( $_GET[ $taxonomy ] ) ? sanitize_title( wp_unslash( $_GET[ $taxonomy ] ) ) : '';
 			wp_dropdown_categories(
 				array(
-					/* translators: %s: taxonomy name. */
-					'show_option_all' => sprintf( __( 'All %s', 'favr-directory' ), $tax->labels->name ),
+					// The taxonomy's own words for everything in it.
+					'show_option_all' => $tax->labels->all_items,
 					'taxonomy'        => $taxonomy,
 					'name'            => $taxonomy,
 					'value_field'     => 'slug',
@@ -254,7 +300,7 @@ final class ListScreen {
 		check_ajax_referer( ID::NONCE_AJAX, 'nonce' );
 		$post_id = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0;
 		if ( ! $post_id || ! Business::find( $post_id ) || ! current_user_can( 'edit_post', $post_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'You cannot edit this business.', 'favr-directory' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'You cannot edit this listing.', 'favr-directory' ) ), 403 );
 		}
 		$on = '1' !== get_post_meta( $post_id, ID::meta( 'featured' ), true );
 		if ( $on ) {

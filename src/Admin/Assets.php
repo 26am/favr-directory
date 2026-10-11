@@ -59,7 +59,7 @@ final class Assets {
 					'useImage'     => __( 'Use this image', 'favr-directory' ),
 					'addPhotos'    => __( 'Add photos to the gallery', 'favr-directory' ),
 					'addToGallery' => __( 'Add to gallery', 'favr-directory' ),
-					'confirmClear' => __( 'Remove all opening hours for this business?', 'favr-directory' ),
+					'confirmClear' => __( 'Remove all opening hours for this listing?', 'favr-directory' ),
 					/* translators: %d: number of characters. */
 					'charsLeft'    => __( '%d characters left', 'favr-directory' ),
 				),

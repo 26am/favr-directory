@@ -25,6 +25,10 @@ use FavrDirectory\Vendor\FavrCore\Support\Hours;
  *  - tab         string  Tab id.
  *  - width       string  full|half|third (admin layout only).
  *  - description string  Help text under the input.
+ *  - admin_label / admin_description  string  Wording for the staff edit screen when it differs.
+ *                        `label` and `description` are also what representatives read on the
+ *                        front-end form and what REST and page builders show, so they follow
+ *                        the kind of directory; staff always read "listing". See forStaff().
  *  - placeholder string
  *  - options     array   value => label (select, checkboxes).
  *  - default     mixed
@@ -44,9 +48,10 @@ final class FieldRegistry {
 	private static ?array $tabs = null;
 
 	/**
-	 * Admin tabs in display order.
+	 * Tabs in display order: the staff edit screen and the front-end form share them. An
+	 * `admin_label` is the staff screen's wording where it differs (see forStaff()).
 	 *
-	 * @return array<string, array{label: string, icon: string}>
+	 * @return array<string, array{label: string, icon: string, admin_label?: string}>
 	 */
 	public static function tabs(): array {
 		if ( null === self::$tabs ) {
@@ -72,16 +77,18 @@ final class FieldRegistry {
 					'icon'  => 'dashicons-share',
 				),
 				'media'      => array(
-					'label' => __( 'Photos & Video', 'favr-directory' ),
-					'icon'  => 'dashicons-format-gallery',
+					'label'       => __( 'Photos & Video', 'favr-directory' ),
+					'admin_label' => __( 'Photos & video', 'favr-directory' ),
+					'icon'        => 'dashicons-format-gallery',
 				),
 				'membership' => array(
 					'label' => __( 'Membership', 'favr-directory' ),
 					'icon'  => 'dashicons-id-alt',
 				),
 				'extras'     => array(
-					'label' => __( 'Deals & Extras', 'favr-directory' ),
-					'icon'  => 'dashicons-tag',
+					'label'       => __( 'Deals & Extras', 'favr-directory' ),
+					'admin_label' => __( 'Deals & extras', 'favr-directory' ),
+					'icon'        => 'dashicons-tag',
 				),
 			);
 
@@ -143,6 +150,23 @@ final class FieldRegistry {
 		return array_filter( self::all(), static fn( array $f ): bool => $f['tab'] === $tab );
 	}
 
+	/**
+	 * A field or tab as staff read it in wp-admin: its `admin_label` / `admin_description`
+	 * where it has one, otherwise unchanged.
+	 *
+	 * @param array<string, mixed> $item Field or tab definition.
+	 * @return array<string, mixed>
+	 */
+	public static function forStaff( array $item ): array {
+		foreach ( array( 'label', 'description' ) as $key ) {
+			$staff = (string) ( $item[ 'admin_' . $key ] ?? '' );
+			if ( '' !== $staff ) {
+				$item[ $key ] = $staff;
+			}
+		}
+		return $item;
+	}
+
 	/** Reset caches (tests, or after late filter registration). */
 	public static function reset(): void {
 		self::$fields = null;
@@ -196,8 +220,10 @@ final class FieldRegistry {
 		return FieldSet::normalize(
 			array_merge(
 				array(
-					'tab'           => 'overview',
-					'member_access' => '',
+					'tab'               => 'overview',
+					'member_access'     => '',
+					'admin_label'       => '',
+					'admin_description' => '',
 				),
 				$field
 			)
@@ -372,6 +398,7 @@ final class FieldRegistry {
 			array(
 				'id'          => 'online_only',
 				'label'       => __( 'Online-only business (no public address)', 'favr-directory' ),
+				'admin_label' => __( 'Online-only listing (no public address)', 'favr-directory' ),
 				'type'        => 'toggle',
 				'tab'         => 'location',
 				'description' => __( 'Hides the address and map on the listing.', 'favr-directory' ),
@@ -435,13 +462,14 @@ final class FieldRegistry {
 				),
 			),
 			array(
-				'id'          => 'country',
-				'label'       => __( 'Country', 'favr-directory' ),
-				'type'        => 'text',
-				'tab'         => 'location',
-				'width'       => 'half',
-				'description' => __( 'Optional. Leave blank for local businesses.', 'favr-directory' ),
-				'conditions'  => array(
+				'id'                => 'country',
+				'label'             => __( 'Country', 'favr-directory' ),
+				'type'              => 'text',
+				'tab'               => 'location',
+				'width'             => 'half',
+				'description'       => __( 'Optional. Leave blank for local businesses.', 'favr-directory' ),
+				'admin_description' => __( 'Optional. Leave blank for local listings.', 'favr-directory' ),
+				'conditions'        => array(
 					'field' => 'online_only',
 					'value' => '',
 				),
@@ -534,11 +562,12 @@ final class FieldRegistry {
 
 			// Membership.
 			array(
-				'id'          => 'featured',
-				'label'       => __( 'Featured listing', 'favr-directory' ),
-				'type'        => 'toggle',
-				'tab'         => 'membership',
-				'description' => __( 'Featured businesses are highlighted and shown first in the directory.', 'favr-directory' ),
+				'id'                => 'featured',
+				'label'             => __( 'Featured listing', 'favr-directory' ),
+				'type'              => 'toggle',
+				'tab'               => 'membership',
+				'description'       => __( 'Featured businesses are highlighted and shown first in the directory.', 'favr-directory' ),
+				'admin_description' => __( 'Featured listings are highlighted and shown first in the directory.', 'favr-directory' ),
 			),
 			array(
 				'id'    => 'member_since',
@@ -576,6 +605,7 @@ final class FieldRegistry {
 			array(
 				'id'          => 'highlights',
 				'label'       => __( 'Business highlights', 'favr-directory' ),
+				'admin_label' => __( 'Listing highlights', 'favr-directory' ),
 				'type'        => 'checkboxes',
 				'tab'         => 'extras',
 				'options'     => self::highlightOptions(),

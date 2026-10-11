@@ -13,7 +13,8 @@ use FavrDirectory\Schema\Identifiers as ID;
 
 /**
  * Levels carry a display order (drives "higher tiers first" sorting in the directory) and a
- * badge color.
+ * badge color. Their list is in that order, with the colour in front of each name. Favr Members
+ * draws the same list when it runs without the Directory (its Admin\LevelScreen).
  */
 final class LevelScreen {
 
@@ -25,6 +26,9 @@ final class LevelScreen {
 		add_action( 'edited_' . ID::TAX_LEVEL, array( $this, 'save' ) );
 		add_filter( 'manage_edit-' . ID::TAX_LEVEL . '_columns', array( $this, 'columns' ) );
 		add_filter( 'manage_' . ID::TAX_LEVEL . '_custom_column', array( $this, 'column' ), 10, 3 );
+		// After WordPress has escaped the name for the list (`_wp_specialchars`, priority 30).
+		add_filter( 'term_name', array( $this, 'name' ), 40, 2 );
+		add_filter( 'get_terms', array( $this, 'order' ), 10, 3 );
 	}
 
 	/** Fields on the "Add level" form. */
@@ -103,21 +107,75 @@ final class LevelScreen {
 	}
 
 	/**
-	 * Column content.
+	 * The Order cell: the number, and nothing else. (The colour sits before the name.)
 	 *
-	 * @param string $content Content.
-	 * @param string $column  Column.
-	 * @param int    $term_id Term id.
+	 * @param mixed $content Content.
+	 * @param mixed $column  Column.
+	 * @param mixed $term_id Term id.
 	 */
-	public function column( string $content, string $column, int $term_id ): string {
-		if ( 'favr_order' !== $column ) {
-			return $content;
+	public function column( $content, $column, $term_id ): string {
+		return 'favr_order' === $column ? (string) (int) get_term_meta( (int) $term_id, ID::TERM_META_ORDER, true ) : (string) $content;
+	}
+
+	/**
+	 * A level's name in the list, after its colour: the same dot as in the Membership level box
+	 * and the Directory list's Level column. A level without a colour gets none.
+	 *
+	 * @param mixed $name The name as WordPress prints it, already escaped.
+	 * @param mixed $term The term.
+	 */
+	public function name( $name, $term = null ): string {
+		if ( ! is_object( $term ) || ! isset( $term->term_id, $term->taxonomy ) || ID::TAX_LEVEL !== $term->taxonomy ) {
+			return (string) $name;
 		}
-		$color = (string) get_term_meta( $term_id, ID::TERM_META_COLOR, true );
-		return sprintf(
-			'<span class="favr-level__swatch" style="background:%s"></span> %d',
-			esc_attr( '' !== $color ? $color : '#94a3b8' ),
-			(int) get_term_meta( $term_id, ID::TERM_META_ORDER, true )
+		$dot = LevelChip::swatch( (string) get_term_meta( (int) $term->term_id, ID::TERM_META_COLOR, true ) );
+		return '' !== $dot ? $dot . ' ' . trim( (string) $name ) : (string) $name;
+	}
+
+	/**
+	 * The Membership levels list in the order its Order column shows, unless a column heading
+	 * was clicked. WordPress fetches every level for this list (levels are hierarchical) and
+	 * lays them out in the order it gets them, so sorting what it fetched sorts the screen.
+	 * Nothing is queried again: the order values are term meta WordPress has already loaded.
+	 *
+	 * @param mixed $terms      What get_terms() found.
+	 * @param mixed $taxonomies The taxonomies asked for.
+	 * @param mixed $args       The query.
+	 * @return mixed The same levels; on the levels screen, by order.
+	 */
+	public function order( $terms, $taxonomies = array(), $args = array() ) {
+		if ( ! is_array( $terms ) || array( ID::TAX_LEVEL ) !== array_values( (array) $taxonomies ) || 'all' !== ( is_array( $args ) ? ( $args['fields'] ?? 'all' ) : 'all' ) ) {
+			return $terms;
+		}
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- only reads whether a column heading was clicked.
+		if ( ! $screen || 'edit-' . ID::TAX_LEVEL !== $screen->id || ! empty( $_GET['orderby'] ) ) {
+			return $terms;
+		}
+		$orders = array();
+		foreach ( $terms as $term ) {
+			if ( ! is_object( $term ) || ! isset( $term->term_id, $term->name ) ) {
+				return $terms;
+			}
+			$orders[ (int) $term->term_id ] = (int) get_term_meta( (int) $term->term_id, ID::TERM_META_ORDER, true );
+		}
+		return self::byOrder( $terms, $orders );
+	}
+
+	/**
+	 * Levels by their order value (none counts as 0, which is what the column shows), then by
+	 * name.
+	 *
+	 * @param array<int|string, object> $terms  Levels (term_id, name).
+	 * @param array<int, int>           $orders Term id => order.
+	 * @return list<object>
+	 */
+	public static function byOrder( array $terms, array $orders ): array {
+		$terms = array_values( $terms );
+		usort(
+			$terms,
+			static fn( object $a, object $b ): int => array( $orders[ (int) $a->term_id ] ?? 0, strtolower( (string) $a->name ) ) <=> array( $orders[ (int) $b->term_id ] ?? 0, strtolower( (string) $b->name ) )
 		);
+		return $terms;
 	}
 }

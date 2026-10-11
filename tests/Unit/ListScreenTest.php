@@ -110,6 +110,21 @@ final class ListScreenTest extends TestCase {
 		$this->assertSame( 'Listing', $columns['title'] );
 	}
 
+	public function test_the_e_mail_link_carries_the_whole_address_as_its_title(): void {
+		Functions\stubs(
+			array(
+				'esc_attr' => static fn( $text ) => htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' ),
+				'esc_html' => static fn( $text ) => htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' ),
+			)
+		);
+		// The column cuts a long address off with "…": hovering the link shows all of it.
+		$this->assertSame(
+			'<a href="mailto:elena.marquez@marquezleetaxadvisors.example" title="elena.marquez@marquezleetaxadvisors.example">elena.marquez@marquezleetaxadvisors.example</a>',
+			ListScreen::emailLink( 'elena.marquez@marquezleetaxadvisors.example' )
+		);
+		$this->assertStringContainsString( ' title="o&#039;neal&amp;sons@example.org"', ListScreen::emailLink( "o'neal&sons@example.org" ) );
+	}
+
 	public function test_bulk_messages_say_listing(): void {
 		$counts   = array(
 			'updated'   => 1,

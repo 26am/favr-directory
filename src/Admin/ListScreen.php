@@ -157,7 +157,8 @@ final class ListScreen {
 					printf( '<div><span class="dashicons dashicons-phone"></span> %s</div>', esc_html( $phone ) );
 				}
 				if ( '' !== $email ) {
-					printf( '<div><span class="dashicons dashicons-email"></span> <a href="mailto:%1$s">%2$s</a></div>', esc_attr( $email ), esc_html( $email ) );
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- emailLink() escapes each part.
+					echo '<div><span class="dashicons dashicons-email"></span> ' . self::emailLink( $email ) . '</div>';
 				}
 				if ( '' === $phone && '' === $email ) {
 					echo '<span aria-hidden="true">—</span>';
@@ -180,6 +181,16 @@ final class ListScreen {
 				);
 				break;
 		}
+	}
+
+	/**
+	 * The e-mail link of the Contact column. Where the column is narrow a long address ends in
+	 * "…", so the link carries the whole address as its title: hovering shows it.
+	 *
+	 * @param string $email The listing's e-mail address.
+	 */
+	public static function emailLink( string $email ): string {
+		return sprintf( '<a href="mailto:%1$s" title="%1$s">%2$s</a>', esc_attr( $email ), esc_html( $email ) );
 	}
 
 	/**

@@ -41,7 +41,7 @@ final class LevelChip {
 	 *
 	 * @param string $color Stored colour.
 	 */
-	private static function swatch( string $color ): string {
+	public static function swatch( string $color ): string {
 		$hex = (string) sanitize_hex_color( $color );
 		return '' !== $hex ? sprintf( '<span class="favr-level__swatch" style="background:%s"></span>', esc_attr( $hex ) ) : '';
 	}

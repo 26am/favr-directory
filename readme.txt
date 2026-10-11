@@ -38,6 +38,10 @@ Favr Directory lets chamber and association staff manage member businesses from 
 * The Level column of the Directory list shows each level with its own color; it is still the link to the list filtered by that level.
 * Membership levels use word for word the labels Favr Members gives them, so the Membership levels screen reads the same whichever of the two plugins a site runs.
 * Fixed: "Edit" on the permalink under a listing's name now saves. The plugin used to remove WordPress's Slug box, which holds the field that edit is saved through, so a new address was dropped on Update.
+* The Directory list's search also finds a listing by company, e-mail, phone or city.
+* The Listing health checklist ticks an item off as soon as its field is filled.
+* Page builders say "listing" too: the Elementor widgets ("Directory", "Listing profile", "Listing field", "My listing (edit form)"), their settings, the dynamic tags, the blocks and the block templates. Internal names are unchanged, so existing pages keep working.
+* Membership levels are listed in their own order with the color before the name; the Contact column shows the e-mail first, with the full address on hover.
 
 = 1.2.0 =
 * Directory card and "Add listing" button on the Favr dashboard (Favr Sites plugin).

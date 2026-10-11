@@ -109,6 +109,24 @@ final class LevelScreenTest extends TestCase {
 	}
 
 	/**
+	 * WordPress marks Name as the sorted column of every term list it has just opened (an arrow,
+	 * and aria-sort for screen readers). This list opens in the levels' own order, so no heading
+	 * carries that mark until one is clicked.
+	 */
+	public function test_name_is_not_marked_as_the_sorted_column_when_the_list_opens(): void {
+		$sortable = ( new LevelScreen() )->sortable(
+			array(
+				'name'  => array( 'name', false, 'Name', 'Table ordered hierarchically.', 'asc' ),
+				'posts' => array( 'count', false, 'Count', 'Table ordered by Posts Count.' ),
+			)
+		);
+
+		$this->assertSame( array( 'name', false, 'Name', 'Table ordered hierarchically.' ), $sortable['name'], 'Name can still be clicked.' );
+		$this->assertSame( array( 'count', false, 'Count', 'Table ordered by Posts Count.' ), $sortable['posts'] );
+		$this->assertSame( array( 'name', 'posts' ), array_keys( $sortable ) );
+	}
+
+	/**
 	 * @dataProvider otherLists
 	 *
 	 * @param string               $screen     Screen id.
@@ -197,5 +215,6 @@ final class LevelScreenTest extends TestCase {
 
 		$this->assertGreaterThan( 30, has_filter( 'term_name', array( $screen, 'name' ) ) );
 		$this->assertNotFalse( has_filter( 'get_terms', array( $screen, 'order' ) ) );
+		$this->assertNotFalse( has_filter( 'manage_edit-' . ID::TAX_LEVEL . '_sortable_columns', array( $screen, 'sortable' ) ) );
 	}
 }

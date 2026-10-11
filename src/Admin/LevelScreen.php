@@ -29,6 +29,7 @@ final class LevelScreen {
 		// After WordPress has escaped the name for the list (`_wp_specialchars`, priority 30).
 		add_filter( 'term_name', array( $this, 'name' ), 40, 2 );
 		add_filter( 'get_terms', array( $this, 'order' ), 10, 3 );
+		add_filter( 'manage_edit-' . ID::TAX_LEVEL . '_sortable_columns', array( $this, 'sortable' ) );
 	}
 
 	/** Fields on the "Add level" form. */
@@ -160,6 +161,21 @@ final class LevelScreen {
 			$orders[ (int) $term->term_id ] = (int) get_term_meta( (int) $term->term_id, ID::TERM_META_ORDER, true );
 		}
 		return self::byOrder( $terms, $orders );
+	}
+
+	/**
+	 * WordPress marks Name as the sorted column of every term list it has just opened (an arrow,
+	 * and aria-sort for screen readers). This list opens in the levels' own order, so the mark
+	 * would contradict the rows: Name keeps its link and loses the mark until it is clicked.
+	 *
+	 * @param mixed $columns Sortable columns: key => { orderby, descending first, label, table caption, opening order }.
+	 * @return mixed
+	 */
+	public function sortable( $columns ) {
+		if ( is_array( $columns ) && isset( $columns['name'] ) && is_array( $columns['name'] ) ) {
+			$columns['name'] = array_slice( $columns['name'], 0, 4 );
+		}
+		return $columns;
 	}
 
 	/**

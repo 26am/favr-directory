@@ -61,6 +61,25 @@
 	content: "+ ";
 }
 
+/* A checklist item whose field has been filled in since the page loaded: ticked off and struck
+   through, still a shortcut to the field. "body … li" out-ranks Favr Sites' skin, which gives
+   these links its accent colour and no decoration. */
+body .favr-health__todo li.is-done .button-link,
+body .favr-health__todo li.is-done .button-link:hover {
+	color: var(--favr-muted, var(--favr-admin-muted));
+	font-weight: 400;
+	text-decoration: line-through;
+}
+
+/* The tick: its own box, so the line through the words stops before it. */
+body .favr-health__todo li.is-done .button-link::before {
+	content: "\2713\00a0";
+	display: inline-block;
+	color: var(--favr-ok, #00a32a);
+	font-weight: 700;
+	text-decoration: none;
+}
+
 .favr-levels {
 	display: flex;
 	flex-direction: column;

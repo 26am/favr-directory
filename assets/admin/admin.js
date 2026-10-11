@@ -1,6 +1,6 @@
 /* Favr Directory — admin extras. The field UI itself (tabs, media, hours, repeaters, conditions)
-   comes from favr-core (assets/core/fields.js); this adds the listing health meter, "go to field"
-   shortcuts, the featured star on the list screen and color pickers. */
+   comes from favr-core (assets/core/fields.js); this adds the listing health meter and its
+   checklist, "go to field" shortcuts, the featured star on the list screen and color pickers. */
 ( function ( $ ) {
 	'use strict';
 
@@ -72,6 +72,37 @@
 		return $.trim( text || '' ) !== '';
 	}
 
+	// One thing the score counts: the name, description, category and cover photo live in
+	// WordPress's own boxes, everything else is a field of the panel.
+	function itemFilled( key ) {
+		switch ( key ) {
+			case 'title':
+				return $.trim( $( '#title' ).val() ) !== '';
+			case 'description':
+				return descriptionFilled();
+			case 'category':
+				return $( '#favr_business_catchecklist input:checked' ).length > 0;
+			case 'cover':
+				return parseInt( $( '#_thumbnail_id' ).val(), 10 ) > 0;
+			default:
+				return valueFilled( key );
+		}
+	}
+
+	// The "Add …" list under the score: an item is ticked off as soon as its field is filled in,
+	// and comes back if the field is emptied again. It stays a shortcut to the field.
+	function updateChecklist() {
+		$( '.favr-health__todo .favr-goto' ).each( function () {
+			var $item = $( this );
+			var done = itemFilled( String( $item.data( 'field' ) ) );
+			$item.closest( 'li' ).toggleClass( 'is-done', done );
+			$item.find( '.favr-health__done' ).remove();
+			if ( done && i18n.done ) {
+				$item.append( $( '<span class="screen-reader-text favr-health__done"></span>' ).text( ' ' + i18n.done ) );
+			}
+		} );
+	}
+
 	function updateHealth() {
 		var $box = $( '.favr-health' );
 		if ( ! $box.length || ! cfg.weights ) {
@@ -80,31 +111,15 @@
 		var total = 0;
 		var earned = 0;
 		$.each( cfg.weights, function ( key, weight ) {
-			var filled;
-			switch ( key ) {
-				case 'title':
-					filled = $.trim( $( '#title' ).val() ) !== '';
-					break;
-				case 'description':
-					filled = descriptionFilled();
-					break;
-				case 'category':
-					filled = $( '#favr_business_catchecklist input:checked' ).length > 0;
-					break;
-				case 'cover':
-					filled = parseInt( $( '#_thumbnail_id' ).val(), 10 ) > 0;
-					break;
-				default:
-					filled = valueFilled( key );
-			}
 			total += weight;
-			earned += filled ? weight : 0;
+			earned += itemFilled( key ) ? weight : 0;
 		} );
 		var score = total ? Math.round( ( earned / total ) * 100 ) : 0;
 		$box.attr( { 'data-score': score, 'data-tone': score >= 90 ? 'good' : ( score >= 60 ? 'ok' : 'low' ) } );
 		$box.find( '.favr-health__ring' ).css( '--favr-score', score );
 		$box.find( '.favr-health__value' ).text( score + '%' );
 		$box.find( '.favr-health__headline' ).text( score >= 90 ? i18n.great : ( score >= 60 ? i18n.almost : i18n.needsMore ) );
+		updateChecklist();
 
 		// Tabs with content get a dot.
 		$( '.favr-pane' ).each( function () {

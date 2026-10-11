@@ -77,6 +77,8 @@ final class Assets {
 					'great'     => __( 'Looking great!', 'favr-directory' ),
 					'almost'    => __( 'Almost there', 'favr-directory' ),
 					'needsMore' => __( 'Needs more details', 'favr-directory' ),
+					/* translators: read out after a Listing health checklist item that has just been filled in, e.g. "Add logo (done)". */
+					'done'      => __( '(done)', 'favr-directory' ),
 				),
 			)
 		);

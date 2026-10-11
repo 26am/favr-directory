@@ -28,7 +28,7 @@ final class FieldValues {
 	 */
 	public static function textOptions(): array {
 		$options = array(
-			'name'       => __( 'Business name', 'favr-directory' ),
+			'name'       => __( 'Listing name', 'favr-directory' ),
 			'address'    => __( 'Address (one line)', 'favr-directory' ),
 			'locality'   => __( 'City, State', 'favr-directory' ),
 			'categories' => __( 'Categories', 'favr-directory' ),
@@ -38,7 +38,8 @@ final class FieldValues {
 			if ( ! empty( $field['private'] ) || in_array( $field['type'], array( 'image', 'gallery', 'hours', 'repeater', 'toggle' ), true ) ) {
 				continue;
 			}
-			$options[ (string) $id ] = (string) $field['label'];
+			// Only the page builders' panels read these labels, so they are in staff words.
+			$options[ (string) $id ] = (string) FieldRegistry::forStaff( $field )['label'];
 		}
 		return $options;
 	}
@@ -50,7 +51,7 @@ final class FieldValues {
 	 */
 	public static function urlOptions(): array {
 		$options = array(
-			'profile'    => __( 'Business page', 'favr-directory' ),
+			'profile'    => __( 'Listing page', 'favr-directory' ),
 			'website'    => __( 'Website', 'favr-directory' ),
 			'booking'    => __( 'Booking link', 'favr-directory' ),
 			'phone'      => __( 'Call (tel: link)', 'favr-directory' ),

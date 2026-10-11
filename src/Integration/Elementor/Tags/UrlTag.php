@@ -26,7 +26,7 @@ final class UrlTag extends Data_Tag {
 
 	/** Title. */
 	public function get_title(): string {
-		return __( 'Business Link', 'favr-directory' );
+		return __( 'Listing link', 'favr-directory' );
 	}
 
 	/** Group. */

@@ -13,8 +13,8 @@ use FavrDirectory\Frontend\Shortcodes;
 use FavrDirectory\Vendor\FavrCore\Integrations\Elementor\Widget;
 
 /**
- * A whole business profile: the current business (in a Theme Builder single template) or one
- * chosen by ID.
+ * A whole listing: the current one (in a Theme Builder single template) or one chosen by ID.
+ * Its name and its `business_id` setting are what saved pages hold, so they keep the old word.
  */
 final class ProfileWidget extends Widget {
 
@@ -25,7 +25,7 @@ final class ProfileWidget extends Widget {
 
 	/** Title. */
 	public function get_title(): string {
-		return __( 'Business Profile', 'favr-directory' );
+		return __( 'Listing profile', 'favr-directory' );
 	}
 
 	/** Icon. */
@@ -52,11 +52,11 @@ final class ProfileWidget extends Widget {
 	protected function settings(): array {
 		return array(
 			'business_id' => array(
-				'label'       => __( 'Business ID', 'favr-directory' ),
+				'label'       => __( 'Listing ID', 'favr-directory' ),
 				'type'        => 'number',
 				'default'     => 0,
 				'min'         => 0,
-				'description' => __( '0 shows the current business (use this in a single-business template).', 'favr-directory' ),
+				'description' => __( '0 shows the current listing (use this in a single-listing template).', 'favr-directory' ),
 			),
 		);
 	}
@@ -69,7 +69,7 @@ final class ProfileWidget extends Widget {
 	protected function output( array $settings ): string {
 		$html = ( new Shortcodes() )->profile( array( 'id' => (int) $settings['business_id'] ) );
 		if ( '' === $html && $this->isEditing() ) {
-			return '<p class="favr-builder-note">' . esc_html__( 'Business Profile: shows the current business on business pages, or set a Business ID.', 'favr-directory' ) . '</p>';
+			return '<p class="favr-builder-note">' . esc_html__( 'Listing profile: shows the current listing on listing pages, or set a Listing ID.', 'favr-directory' ) . '</p>';
 		}
 		return $html;
 	}

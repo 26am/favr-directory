@@ -26,7 +26,7 @@ final class ImageTag extends Data_Tag {
 
 	/** Title. */
 	public function get_title(): string {
-		return __( 'Business Image', 'favr-directory' );
+		return __( 'Listing image', 'favr-directory' );
 	}
 
 	/** Group. */

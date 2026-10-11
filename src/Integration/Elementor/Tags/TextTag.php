@@ -15,7 +15,7 @@ use Elementor\Modules\DynamicTags\Module;
 use FavrDirectory\Integration\FieldValues;
 
 /**
- * "Favr Directory → Business Field" for headings, text and buttons in Theme Builder templates.
+ * "Favr Directory → Listing field" for headings, text and buttons in Theme Builder templates.
  */
 final class TextTag extends Tag {
 
@@ -26,7 +26,7 @@ final class TextTag extends Tag {
 
 	/** Title. */
 	public function get_title(): string {
-		return __( 'Business Field', 'favr-directory' );
+		return __( 'Listing field', 'favr-directory' );
 	}
 
 	/** Group. */

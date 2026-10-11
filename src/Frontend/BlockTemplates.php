@@ -31,20 +31,20 @@ final class BlockTemplates {
 		}
 		$this->registerOne(
 			'single-' . ID::POST_TYPE,
-			__( 'Single Business', 'favr-directory' ),
-			__( 'Displays a business profile from the directory.', 'favr-directory' ),
+			__( 'Single listing', 'favr-directory' ),
+			__( 'Displays one listing from the directory.', 'favr-directory' ),
 			$this->single()
 		);
 		$this->registerOne(
 			'archive-' . ID::POST_TYPE,
-			__( 'Business Directory', 'favr-directory' ),
-			__( 'The searchable business directory.', 'favr-directory' ),
+			__( 'Directory', 'favr-directory' ),
+			__( 'The searchable directory.', 'favr-directory' ),
 			$this->archive( true )
 		);
 		$this->registerOne(
 			'taxonomy-' . ID::TAX_CATEGORY,
-			__( 'Business Category', 'favr-directory' ),
-			__( 'Businesses in one directory category.', 'favr-directory' ),
+			__( 'Directory category', 'favr-directory' ),
+			__( 'The listings in one directory category.', 'favr-directory' ),
 			$this->archive( false )
 		);
 	}

@@ -24,7 +24,7 @@ final class MyListingWidget extends Widget {
 
 	/** Title. */
 	public function get_title(): string {
-		return __( 'My Listing (edit form)', 'favr-directory' );
+		return __( 'My listing (edit form)', 'favr-directory' );
 	}
 
 	/** Icon. */

@@ -55,3 +55,5 @@ if ( ! class_exists( 'wpdb' ) ) {
 		}
 	}
 }
+
+require_once __DIR__ . '/stubs/elementor.php';

@@ -24,7 +24,7 @@ final class DirectoryWidget extends Widget {
 
 	/** Title. */
 	public function get_title(): string {
-		return __( 'Business Directory', 'favr-directory' );
+		return __( 'Directory', 'favr-directory' );
 	}
 
 	/** Icon. */
@@ -34,7 +34,7 @@ final class DirectoryWidget extends Widget {
 
 	/** Keywords. */
 	public function get_keywords(): array {
-		return array( 'directory', 'business', 'members', 'chamber', 'favr' );
+		return array( 'directory', 'listing', 'business', 'members', 'chamber', 'favr' );
 	}
 
 	/** Styles. */
@@ -72,7 +72,7 @@ final class DirectoryWidget extends Widget {
 				'options' => $levels,
 			),
 			'featured'     => array(
-				'label' => __( 'Featured businesses only', 'favr-directory' ),
+				'label' => __( 'Featured listings only', 'favr-directory' ),
 				'type'  => 'switcher',
 			),
 			'layout'       => array(
@@ -96,7 +96,7 @@ final class DirectoryWidget extends Widget {
 				),
 			),
 			'per_page'     => array(
-				'label'       => __( 'Businesses per page', 'favr-directory' ),
+				'label'       => __( 'Listings per page', 'favr-directory' ),
 				'type'        => 'number',
 				'min'         => 0,
 				'max'         => 100,

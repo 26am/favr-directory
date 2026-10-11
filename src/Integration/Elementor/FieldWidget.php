@@ -13,8 +13,9 @@ use FavrDirectory\Frontend\Shortcodes;
 use FavrDirectory\Vendor\FavrCore\Integrations\Elementor\Widget;
 
 /**
- * One piece of a business (phone, hours table, map, social icons, logo…) for building custom
- * single-business layouts in Elementor, with or without Elementor Pro.
+ * One piece of a listing (phone, hours table, map, social icons, logo…) for building custom
+ * single-listing layouts in Elementor, with or without Elementor Pro. Its name and its
+ * `business_id` setting are what saved pages hold, so they keep the old word.
  */
 final class FieldWidget extends Widget {
 
@@ -25,7 +26,7 @@ final class FieldWidget extends Widget {
 
 	/** Title. */
 	public function get_title(): string {
-		return __( 'Business Field', 'favr-directory' );
+		return __( 'Listing field', 'favr-directory' );
 	}
 
 	/** Icon. */
@@ -35,7 +36,7 @@ final class FieldWidget extends Widget {
 
 	/** Keywords. */
 	public function get_keywords(): array {
-		return array( 'business', 'field', 'hours', 'map', 'phone', 'favr' );
+		return array( 'listing', 'business', 'field', 'hours', 'map', 'phone', 'favr' );
 	}
 
 	/** Styles. */
@@ -69,11 +70,11 @@ final class FieldWidget extends Widget {
 				'default' => true,
 			),
 			'business_id' => array(
-				'label'       => __( 'Business ID', 'favr-directory' ),
+				'label'       => __( 'Listing ID', 'favr-directory' ),
 				'type'        => 'number',
 				'default'     => 0,
 				'min'         => 0,
-				'description' => __( '0 uses the current business.', 'favr-directory' ),
+				'description' => __( '0 uses the current listing.', 'favr-directory' ),
 			),
 		);
 	}

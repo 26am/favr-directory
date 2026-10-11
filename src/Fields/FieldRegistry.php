@@ -239,13 +239,15 @@ final class FieldRegistry {
 		$fields = array(
 			// Overview.
 			array(
-				'id'          => 'logo',
-				'label'       => __( 'Logo', 'favr-directory' ),
-				'type'        => 'image',
-				'tab'         => 'overview',
-				'width'       => 'third',
-				'description' => __( 'Square images look best. The featured image is used as the cover photo.', 'favr-directory' ),
-				'weight'      => 10,
+				'id'                => 'logo',
+				'label'             => __( 'Logo', 'favr-directory' ),
+				'type'              => 'image',
+				'tab'               => 'overview',
+				'width'             => 'third',
+				'description'       => __( 'Square images look best. The featured image is used as the cover photo.', 'favr-directory' ),
+				// wp-admin has a box titled "Cover photo"; "featured image" is WordPress's word for it.
+				'admin_description' => __( 'Square images look best. The cover photo is set in its own box.', 'favr-directory' ),
+				'weight'            => 10,
 			),
 			array(
 				'id'          => 'organization',

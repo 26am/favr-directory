@@ -91,6 +91,13 @@ final class EditScreenWordsTest extends TestCase {
 		$this->assertSame( 'Deals & extras', FieldRegistry::forStaff( FieldRegistry::tabs()['extras'] )['label'] );
 	}
 
+	public function test_the_logo_help_names_the_cover_photo_box_as_the_screen_does(): void {
+		// The side box is titled "Cover photo"; "featured image" is WordPress's word for it.
+		$help = (string) FieldRegistry::forStaff( FieldRegistry::get( 'logo' ) )['description'];
+		$this->assertSame( 'Square images look best. The cover photo is set in its own box.', $help );
+		$this->assertStringNotContainsStringIgnoringCase( 'featured image', $help );
+	}
+
 	public function test_the_public_wording_does_not_change(): void {
 		// The same definitions label the front-end "My Listing" form, REST and the page builders.
 		$this->assertSame( 'Online-only business (no public address)', FieldRegistry::get( 'online_only' )['label'] );

@@ -24,6 +24,7 @@ final class ListScreen {
 		add_filter( 'manage_' . ID::POST_TYPE . '_posts_columns', array( $this, 'columns' ) );
 		add_action( 'manage_' . ID::POST_TYPE . '_posts_custom_column', array( $this, 'column' ), 10, 2 );
 		add_filter( 'manage_edit-' . ID::POST_TYPE . '_sortable_columns', array( $this, 'sortable' ) );
+		add_filter( 'post_column_taxonomy_links', array( $this, 'levelChips' ), 10, 3 );
 		add_action( 'restrict_manage_posts', array( $this, 'filters' ), 10, 2 );
 		add_action( 'pre_get_posts', array( $this, 'applyFilters' ) );
 		add_filter( 'post_row_actions', array( $this, 'rowActions' ), 10, 2 );
@@ -172,6 +173,31 @@ final class ListScreen {
 				);
 				break;
 		}
+	}
+
+	/**
+	 * The Level column is WordPress's own taxonomy column: one bare link per level. Each becomes
+	 * the level chip, with the level's colour; it stays the same link to the list filtered by
+	 * that level, and the column's sorting and the filter above the table are not involved.
+	 *
+	 * @param mixed $links    The links WordPress made, one per term.
+	 * @param mixed $taxonomy The column's taxonomy.
+	 * @param mixed $terms    The terms, in the links' order.
+	 * @return mixed The links; chips in the Level column.
+	 */
+	public function levelChips( $links, $taxonomy = '', $terms = array() ) {
+		if ( ID::TAX_LEVEL !== $taxonomy || ! is_array( $links ) || ! is_array( $terms ) || count( $links ) !== count( $terms ) ) {
+			return $links;
+		}
+		$terms = array_values( $terms );
+		foreach ( array_keys( $links ) as $position => $key ) {
+			$term = $terms[ $position ];
+			if ( ! is_object( $term ) || ! isset( $term->term_id ) || ! is_string( $links[ $key ] ) ) {
+				continue;
+			}
+			$links[ $key ] = LevelChip::link( $links[ $key ], (string) get_term_meta( (int) $term->term_id, ID::TERM_META_COLOR, true ) );
+		}
+		return $links;
 	}
 
 	/**

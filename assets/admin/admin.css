@@ -100,6 +100,25 @@
 	width: 90px;
 }
 
+/* The level chip in the Level column: the level's colour, then its name on the same line.
+   (Favr Sites draws it as a pill for Editors.) */
+.favr-level-chip {
+	white-space: nowrap;
+}
+
+.favr-level-chip .favr-level__swatch {
+	margin-right: 6px;
+}
+
+/* Room for the colour and a name as long as "Professional" where every column shows. Written to
+   out-rank Favr Sites' skin, which still gives this column the width of the name alone (86px):
+   this rule can go once the skin allows for the dot. */
+@media (min-width: 1200px) {
+	body.post-type-favr_business .wp-list-table.fixed .column-taxonomy-favr_member_level {
+		width: 104px;
+	}
+}
+
 .favr-list-logo {
 	width: 44px !important;
 	height: 44px !important;

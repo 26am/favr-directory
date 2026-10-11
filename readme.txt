@@ -36,6 +36,7 @@ Favr Directory lets chamber and association staff manage member businesses from 
 * Fixed "$(...).sortable is not a function" on the listings list, category, level and settings screens.
 * Fixed: updating the plugin no longer removes capabilities other plugins gave the Directory Manager role (Favr Members lets Directory Managers manage members).
 * The Level column of the Directory list shows each level with its own color; it is still the link to the list filtered by that level.
+* Membership levels use word for word the labels Favr Members gives them, so the Membership levels screen reads the same whichever of the two plugins a site runs.
 * Fixed: "Edit" on the permalink under a listing's name now saves. The plugin used to remove WordPress's Slug box, which holds the field that edit is saved through, so a new address was dropped on Update.
 
 = 1.2.0 =

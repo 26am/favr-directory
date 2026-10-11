@@ -85,28 +85,7 @@ final class Registrar {
 			ID::TAX_LEVEL,
 			ID::POST_TYPE,
 			array(
-				'labels'             => array(
-					'name'                  => __( 'Membership levels', 'favr-directory' ),
-					'singular_name'         => __( 'Membership level', 'favr-directory' ),
-					'menu_name'             => __( 'Membership levels', 'favr-directory' ),
-					'search_items'          => __( 'Search levels', 'favr-directory' ),
-					'all_items'             => __( 'All levels', 'favr-directory' ),
-					// Hierarchical, so WordPress would otherwise say "Parent Category" and "No categories".
-					'parent_item'           => __( 'Parent level', 'favr-directory' ),
-					'parent_item_colon'     => __( 'Parent level:', 'favr-directory' ),
-					'edit_item'             => __( 'Edit level', 'favr-directory' ),
-					'view_item'             => __( 'View level', 'favr-directory' ),
-					'update_item'           => __( 'Update level', 'favr-directory' ),
-					'add_new_item'          => __( 'Add level', 'favr-directory' ),
-					'new_item_name'         => __( 'New level name', 'favr-directory' ),
-					'not_found'             => __( 'No levels found.', 'favr-directory' ),
-					'no_terms'              => __( 'No levels', 'favr-directory' ),
-					'filter_by_item'        => __( 'Filter by level', 'favr-directory' ),
-					'items_list_navigation' => __( 'Levels list navigation', 'favr-directory' ),
-					'items_list'            => __( 'Levels list', 'favr-directory' ),
-					'most_used'             => __( 'Most used', 'favr-directory' ),
-					'back_to_items'         => __( '← All levels', 'favr-directory' ),
-				),
+				'labels'             => self::levelLabels(),
 				'hierarchical'       => true,
 				'public'             => false,
 				'publicly_queryable' => false,
@@ -123,6 +102,42 @@ final class Registrar {
 					'assign_terms' => 'edit_' . ID::CAP_TYPE_PLURAL,
 				),
 			)
+		);
+	}
+
+	/**
+	 * The words for membership levels: label for label the ones Favr Members registers for this
+	 * shared taxonomy when it runs without the Directory (its Registrar::levelLabels()), so the
+	 * screens read alike whichever plugin registers it. All of them are spelled out: levels are
+	 * hierarchical, and what is left out WordPress fills in with its category wording ("Search
+	 * Categories", "Parent Category", "Most Used", "Category Link"). tests/Unit/AdminLabelsTest.php
+	 * holds the list; Favr Members' tests hold the same one.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function levelLabels(): array {
+		return array(
+			'name'                  => __( 'Membership levels', 'favr-directory' ),
+			'singular_name'         => __( 'Membership level', 'favr-directory' ),
+			'menu_name'             => __( 'Membership levels', 'favr-directory' ),
+			'search_items'          => __( 'Search levels', 'favr-directory' ),
+			'all_items'             => __( 'All levels', 'favr-directory' ),
+			'parent_item'           => __( 'Parent level', 'favr-directory' ),
+			'parent_item_colon'     => __( 'Parent level:', 'favr-directory' ),
+			'edit_item'             => __( 'Edit level', 'favr-directory' ),
+			'view_item'             => __( 'View level', 'favr-directory' ),
+			'update_item'           => __( 'Update level', 'favr-directory' ),
+			'add_new_item'          => __( 'Add level', 'favr-directory' ),
+			'new_item_name'         => __( 'New level name', 'favr-directory' ),
+			'not_found'             => __( 'No levels found.', 'favr-directory' ),
+			'no_terms'              => __( 'No levels', 'favr-directory' ),
+			'filter_by_item'        => __( 'Filter by level', 'favr-directory' ),
+			'items_list_navigation' => __( 'Levels list navigation', 'favr-directory' ),
+			'items_list'            => __( 'Levels list', 'favr-directory' ),
+			'most_used'             => __( 'Most used', 'favr-directory' ),
+			'back_to_items'         => __( '← All levels', 'favr-directory' ),
+			'item_link'             => __( 'Level link', 'favr-directory' ),
+			'item_link_description' => __( 'A link to a level.', 'favr-directory' ),
 		);
 	}
 

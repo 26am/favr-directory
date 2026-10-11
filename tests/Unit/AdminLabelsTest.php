@@ -22,6 +22,64 @@ final class AdminLabelsTest extends TestCase {
 	/** Words that keep their capital inside a sentence-case label. */
 	private const PROPER_NOUNS = array( 'Trash' );
 
+	/**
+	 * The words for membership levels, all of them. Favr Members registers the same taxonomy when
+	 * it runs without the Directory, and its tests/Unit/AdminWordsTest.php holds this same list:
+	 * change one and the other must follow, or the Membership levels screen reads differently
+	 * depending on which plugins a site runs.
+	 */
+	private const LEVEL_WORDS = array(
+		'name'                  => 'Membership levels',
+		'singular_name'         => 'Membership level',
+		'menu_name'             => 'Membership levels',
+		'search_items'          => 'Search levels',
+		'all_items'             => 'All levels',
+		'parent_item'           => 'Parent level',
+		'parent_item_colon'     => 'Parent level:',
+		'edit_item'             => 'Edit level',
+		'view_item'             => 'View level',
+		'update_item'           => 'Update level',
+		'add_new_item'          => 'Add level',
+		'new_item_name'         => 'New level name',
+		'not_found'             => 'No levels found.',
+		'no_terms'              => 'No levels',
+		'filter_by_item'        => 'Filter by level',
+		'items_list_navigation' => 'Levels list navigation',
+		'items_list'            => 'Levels list',
+		'most_used'             => 'Most used',
+		'back_to_items'         => '← All levels',
+		'item_link'             => 'Level link',
+		'item_link_description' => 'A link to a level.',
+	);
+
+	/**
+	 * Every label WordPress gives a hierarchical taxonomy in its category wording when the plugin
+	 * leaves it out ("Search Categories", "Parent Category", "Most Used", "← Go to Categories",
+	 * "Category Link"): WP_Taxonomy::get_default_labels().
+	 */
+	private const WORDPRESS_CATEGORY_WORDING = array(
+		'name',
+		'singular_name',
+		'search_items',
+		'all_items',
+		'parent_item',
+		'parent_item_colon',
+		'edit_item',
+		'view_item',
+		'update_item',
+		'add_new_item',
+		'new_item_name',
+		'not_found',
+		'no_terms',
+		'filter_by_item',
+		'items_list_navigation',
+		'items_list',
+		'most_used',
+		'back_to_items',
+		'item_link',
+		'item_link_description',
+	);
+
 	/** @var array<string, mixed> */
 	private array $option = array();
 
@@ -139,20 +197,23 @@ final class AdminLabelsTest extends TestCase {
 		$this->assertSame( 'No categories found.', $labels['not_found'] );
 	}
 
-	public function test_levels_follow_the_same_style(): void {
-		$this->register();
-		$labels = $this->taxonomies[ ID::TAX_LEVEL ]['labels'];
+	public function test_levels_use_the_words_shared_with_favr_members(): void {
+		$this->assertSame( self::LEVEL_WORDS, Registrar::levelLabels() );
 
-		$this->assertSame( 'Membership levels', $labels['name'] );
-		$this->assertSame( 'Membership level', $labels['singular_name'] );
-		$this->assertSame( 'All levels', $labels['all_items'] );
-		$this->assertSame( 'Add level', $labels['add_new_item'] );
-		$this->assertSame( 'Edit level', $labels['edit_item'] );
-		$this->assertSame( 'Search levels', $labels['search_items'] );
-		$this->assertSame( 'No levels found.', $labels['not_found'] );
-		// A hierarchical taxonomy without these falls back to WordPress's "Parent Category" and "No categories".
-		$this->assertSame( 'Parent level', $labels['parent_item'] );
-		$this->assertSame( 'No levels', $labels['no_terms'] );
+		$this->register();
+		$this->assertSame( self::LEVEL_WORDS, $this->taxonomies[ ID::TAX_LEVEL ]['labels'], 'The taxonomy is registered with those words.' );
+	}
+
+	/**
+	 * Levels are a hierarchical taxonomy, so every label left out is filled in by WordPress with
+	 * its category wording.
+	 */
+	public function test_no_level_label_is_left_to_say_category_or_tag(): void {
+		$labels = Registrar::levelLabels();
+		foreach ( self::WORDPRESS_CATEGORY_WORDING as $key ) {
+			$this->assertArrayHasKey( $key, $labels, "WordPress would fill in “{$key}” with its category wording." );
+			$this->assertDoesNotMatchRegularExpression( '/categor|\\btags?\\b/i', $labels[ $key ], $key );
+		}
 	}
 
 	public function test_no_admin_label_says_business_or_uses_title_case(): void {

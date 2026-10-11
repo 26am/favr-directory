@@ -19,6 +19,12 @@ use FavrDirectory\Schema\Identifiers as ID;
  */
 final class ListScreen {
 
+	/**
+	 * What the search box reads besides the name and the description: the company, the e-mail,
+	 * the two phone numbers and the city.
+	 */
+	private const SEARCH_FIELDS = array( 'organization', 'email', 'phone', 'phone_alt', 'city' );
+
 	/** Hook. */
 	public function hook(): void {
 		add_filter( 'manage_' . ID::POST_TYPE . '_posts_columns', array( $this, 'columns' ) );
@@ -27,6 +33,7 @@ final class ListScreen {
 		add_filter( 'post_column_taxonomy_links', array( $this, 'levelChips' ), 10, 3 );
 		add_action( 'restrict_manage_posts', array( $this, 'filters' ), 10, 2 );
 		add_action( 'pre_get_posts', array( $this, 'applyFilters' ) );
+		add_filter( 'posts_search', array( $this, 'search' ), 10, 2 );
 		add_filter( 'post_row_actions', array( $this, 'rowActions' ), 10, 2 );
 		add_action( 'wp_ajax_favr_toggle_featured', array( $this, 'ajaxToggleFeatured' ) );
 		add_action( 'load-edit.php', array( $this, 'titleScreen' ) );
@@ -305,6 +312,63 @@ final class ListScreen {
 				)
 			);
 		}
+	}
+
+	/**
+	 * The search box also finds a listing by its company, e-mail, phone or city.
+	 *
+	 * WordPress looks for each typed word in the name and the description only, so an e-mail
+	 * address or a phone number read off the list found nothing. This builds the same clause
+	 * with one more place to look per word: a subquery over the listing's own fields. Nothing is
+	 * joined, so the list stays one query, a listing never comes twice, and the category and
+	 * level filters, the sorting and the page count work as before.
+	 *
+	 * @param mixed $search The search clause WordPress built; empty when nothing was typed.
+	 * @param mixed $query  The query it belongs to.
+	 * @return mixed The clause; on the Directory list, with the fields added.
+	 */
+	public function search( $search, $query = null ) {
+		global $wpdb;
+
+		if ( ! is_string( $search ) || '' === trim( $search ) || ! $query instanceof \WP_Query ) {
+			return $search;
+		}
+		if ( ! is_admin() || ! $query->is_main_query() || ID::POST_TYPE !== $query->get( 'post_type' ) ) {
+			return $search;
+		}
+		$terms = array_filter( (array) $query->get( 'search_terms' ), static fn( $term ): bool => is_string( $term ) && '' !== $term );
+		if ( ! $terms ) {
+			return $search;
+		}
+
+		$keys = array_map( array( ID::class, 'meta' ), self::SEARCH_FIELDS );
+		$in   = implode( ',', array_fill( 0, count( $keys ), '%s' ) );
+		// WordPress's own rule: "-word" leaves out what has the word. Sites may change the sign.
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WordPress's hook, read here so both halves of the search agree.
+		$minus  = (string) apply_filters( 'wp_query_search_exclusion_prefix', '-' );
+		$groups = array();
+		foreach ( $terms as $term ) {
+			$without = '' !== $minus && str_starts_with( $term, $minus );
+			if ( $without ) {
+				$term = substr( $term, strlen( $minus ) );
+			}
+			$like  = '%' . $wpdb->esc_like( $term ) . '%';
+			$op    = $without ? 'NOT LIKE' : 'LIKE';
+			$parts = array();
+			foreach ( array( 'post_title', 'post_excerpt', 'post_content' ) as $column ) {
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- the table name, one of three column names and LIKE or NOT LIKE.
+				$parts[] = $wpdb->prepare( "({$wpdb->posts}.{$column} {$op} %s)", $like );
+			}
+			// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $in is a list of %s placeholders, the rest are table names.
+			$parts[] = ( $without ? 'NOT ' : '' ) . $wpdb->prepare(
+				"EXISTS ( SELECT 1 FROM {$wpdb->postmeta} favr_ls WHERE favr_ls.post_id = {$wpdb->posts}.ID AND favr_ls.meta_key IN ( {$in} ) AND favr_ls.meta_value LIKE %s )",
+				array_merge( $keys, array( $like ) )
+			);
+			// phpcs:enable
+			$groups[] = implode( $without ? ' AND ' : ' OR ', $parts );
+		}
+
+		return ' AND (' . implode( ') AND (', $groups ) . ') ';
 	}
 
 	/**

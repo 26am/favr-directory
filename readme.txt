@@ -4,7 +4,7 @@ Tags: business directory, chamber of commerce, member directory, association, li
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,6 +29,9 @@ Favr Directory lets chamber and association staff manage member businesses from 
 3. Visit /directory/ on your site, or add the Directory block to any page.
 
 == Changelog ==
+
+= 1.2.2 =
+* Fixed: a claim whose hidden robot field a password manager filled was reported as sent and dropped. The field is no longer called "website_check", password managers are told to skip it, and if it still comes back filled the claim form opens again saying the claim wasn't sent.
 
 = 1.2.1 =
 * Staff screens say "listing" in sentence case, whatever the directory lists: Directory → All listings, Add listing, Categories; "Edit listing", "View listing", "Listing published."; the list screen is titled "Directory" (on a directory of people it was "Members", like the Members menu). Categories are "Directory categories"; membership levels follow the same style. Public pages, REST and the front-end forms keep the directory's own noun.

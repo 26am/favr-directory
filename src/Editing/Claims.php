@@ -24,6 +24,7 @@ final class Claims {
 
 	public const META   = '_favr_claim';
 	public const ACTION = 'favr_claim';
+	public const TRAP   = 'favr_leave_blank'; // Hidden robot trap. No word autofill knows (it was "favr_website_check").
 
 	/** Claims per person per day. */
 	private const LIMIT = 5;
@@ -79,20 +80,24 @@ final class Claims {
 		} elseif ( 'slow' === $sent ) {
 			echo '<p>' . esc_html__( 'You’ve sent several claims recently. Please try again tomorrow or contact us.', 'favr-directory' ) . '</p>';
 		} else {
+			if ( 'again' === $sent ) {
+				echo '<p>' . esc_html__( 'Your claim wasn’t sent. Please try again.', 'favr-directory' ) . '</p>';
+			}
 			printf(
-				'<details><summary>%1$s</summary><form method="post" action="%2$s" class="favr-claim-form">',
+				'<details%3$s><summary>%1$s</summary><form method="post" action="%2$s" class="favr-claim-form">',
 				esc_html__( 'Is this your business? Claim it', 'favr-directory' ),
-				esc_url( (string) get_permalink( $post_id ) )
+				esc_url( (string) get_permalink( $post_id ) ),
+				'again' === $sent ? ' open' : ''
 			);
 			wp_nonce_field( self::ACTION . '_' . $post_id, '_favr_claim_nonce' );
 			printf(
 				'<input type="hidden" name="favr_action" value="%1$s"><input type="hidden" name="favr_listing" value="%2$d">'
-				. '<p class="favr-hp" aria-hidden="true"><label>%3$s <input type="text" name="favr_website_check" tabindex="-1" autocomplete="off"></label></p>'
+				. '%3$s'
 				. '<p><label for="favr-claim-msg">%4$s</label><textarea id="favr-claim-msg" name="favr_claim_message" rows="3" maxlength="1000" placeholder="%5$s"></textarea></p>'
 				. '<p><button type="submit" class="favr-btn favr-btn--primary">%6$s</button></p></form></details>',
 				esc_attr( self::ACTION ),
 				(int) $post_id,
-				esc_html__( 'Leave this empty', 'favr-directory' ),
+				self::trapField(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where it is built.
 				esc_html__( 'How are you connected to this business?', 'favr-directory' ),
 				esc_attr__( 'e.g. I’m the owner; you can reach me at the business phone number.', 'favr-directory' ),
 				esc_html__( 'Send claim', 'favr-directory' )
@@ -115,8 +120,13 @@ final class Claims {
 			wp_safe_redirect( '' !== $back ? $back : home_url( '/' ), 303 );
 			exit;
 		}
-		// Bots fill every field; people never see this one.
-		if ( ! empty( $_POST['favr_website_check'] ) || Editors::canEdit( $user_id, $post_id ) || null !== self::claimBy( $post_id, $user_id ) ) {
+		// Bots fill every field; people never see this one. Said out loud: told "sent", a person whose
+		// password manager filled it would wait for a claim that was dropped.
+		if ( self::trapped( $_POST ) ) {
+			wp_safe_redirect( add_query_arg( 'fd_claim', 'again', $back ) . '#favr-claim', 303 );
+			exit;
+		}
+		if ( Editors::canEdit( $user_id, $post_id ) || null !== self::claimBy( $post_id, $user_id ) ) {
 			wp_safe_redirect( add_query_arg( 'fd_claim', 'sent', $back ) . '#favr-claim', 303 );
 			exit;
 		}
@@ -146,6 +156,20 @@ final class Claims {
 		do_action( 'favr_directory_claim_received', $post_id, $user_id, $message );
 		wp_safe_redirect( add_query_arg( 'fd_claim', 'sent', $back ) . '#favr-claim', 303 );
 		exit;
+	}
+
+	/** The hidden field robots fill and people never see; password managers are told to skip it. */
+	public static function trapField(): string {
+		return '<p class="favr-hp" aria-hidden="true"><label>' . esc_html__( 'Leave this empty', 'favr-directory' ) . ' <input type="text" name="' . esc_attr( self::TRAP ) . '" tabindex="-1" autocomplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-protonpass-ignore data-form-type="other"></label></p>';
+	}
+
+	/**
+	 * Pure: did the hidden field come back filled? Only this name counts.
+	 *
+	 * @param array<string, mixed> $post The posted fields.
+	 */
+	public static function trapped( array $post ): bool {
+		return is_string( $post[ self::TRAP ] ?? null ) && '' !== trim( $post[ self::TRAP ] );
 	}
 
 	/**
